@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@aspectron/flow-ux": "^1.0.6"
+  }
+}

@@ -1,0 +1,26 @@
+
+source="./"
+destination="../static"
+url-prefix="/static"
+
+copy-flow-ux=true
+force-override=true # Warning: remove destination
+
+#debug=true
+
+files = [
+    "./flow-ux.js"
+]
+
+
+[mount-map]
+flow-ux="/flow-ux"
+#workflow="/workflow"
+
+#[source-map]
+#workflow="/root/workflow"
+
+
+
+
+

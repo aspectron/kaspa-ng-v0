@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>KASPA</title>
+	<meta name="description" content="Kaspa Wallet">
+	<meta name="theme-color" content="#EFEFEF"/>
+	<meta name="viewport" content="width=device-width,height=device-height, user-scalable=no">
+	<link rel="apple-touch-icon" href="/icons/apple-icon-precomposed.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="/icons/android-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/icons/android-icon-180x180.png">
+	<link rel="apple-touch-icon" sizes="167x167" href="/icons/android-icon-167x167.png">
+	<meta name="apple-mobile-web-app-title" content="KASPA">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<link rel="stylesheet" type="text/css" href="static/node_modules/@aspectron/flow-ux/flow-ux.css" />
+	<link rel="stylesheet" type="text/css" href="/style.css" />
+	<style>
+		kaspa-app{display:block;height:100%;transition:opacity 1s ease-in;}
+		body:after{
+			content:"";position:fixed;opacity:0;
+			transition:opacity 0.5s ease-in;
+			top:0px;left:0px;bottom:0px;right:0px;
+			width:100vw;height:100%;z-index:1000;
+			background:center no-repeat url("/images/loading.svg");
+			background-size:100px;pointer-events:none;
+		}
+		body.loading kaspa-app{opacity:0;}
+		body.loading:after,
+		body:not(.loading) kaspa-app{opacity:1}
+	</style>
+	<script>
+		var flowConfig = {
+			theme:{
+				iconPath:'/resources/icons/',
+				iconFile:'flow-icons',
+				icons:{
+					language:'icons:language'
+				}
+			}
+		}
+	</script>
+	<!--script src="/node_modules/@solana/web3.js/lib/index.iife.js"></script-->
+	<!--script src="https://d3js.org/d3.v7.min.js"></script-->
+	<script type="module" src="/lib/app.js"></script>
+</head>
+<body class="loading">
+	<kaspa-app>
+		<flow-app-drawers swipe-drag swipe-threshold="72" scroll-margin="70" right-drawer-toggle-icon="drawer-toggle">
+			<img slot="header" class="logo" src="/images/logo-180x180.png" />
+			<div slot="header" hide-in-mobile class="logo-text">App</div>
+			<div slot="header" show-in-mobile class="flex"></div>
+			<div slot="header" id="app-header"></div>
+			<div slot="header-suffix" id="app-header"></div>
+			<div slot="left-drawer" class="left-drawer">
+				<div class="app-menu section-menu" id="app-menu"></div>
+				<div class="app-menu sub-menus" id="sub-menu"></div>
+			</div>
+			<div slot="right-drawer" class="right-drawer" id="app-sidebar"></div>
+			<div slot="main" id="app-menu"></div>
+			<div slot="main" id="app-status"></div>
+			<div slot="main" class="scrollable" id="app-main"></div>
+			<div slot="bottom-nav" id="app-bottom-nav"></div>
+		</flow-app-drawers>
+	</kaspa-app>
+</body>
+</html>

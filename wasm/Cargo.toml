@@ -1,0 +1,18 @@
+[package]
+name = "kaspa-protocol-wasm"
+version = "0.1.0"
+description = "Kaspa Protocol WASM Bindings"
+license = "AGPL-3+"
+edition = "2018"
+
+[features]
+test = []
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+kaspa-protocol = { path = "../protocol" }
+
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+wasm-bindgen-futures = "0.4.29"
