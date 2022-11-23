@@ -11,6 +11,7 @@ pub mod controls;
 pub mod application;
 pub mod workspace;
 pub mod user;
+pub mod init;
 //pub mod wallet;
 //pub mod transactions;
 

@@ -29,19 +29,18 @@
 		body:not(.loading) kaspa-app{opacity:1}
 	</style>
 	<script>
-		var flowConfig = {
-			theme:{
-				iconPath:'/resources/icons/',
-				iconFile:'flow-icons',
-				icons:{
-					language:'icons:language'
-				}
-			}
-		}
+		(async()=>{
+			let kaspa = await import('../kaspa/kaspa.js');
+			const wasm = await kaspa.default('/kaspa/kaspa_bg.wasm');
+			//console.log("wasm", wasm, kaspa)
+			kaspa.init_console_logger();
+			//kaspa.show_logs();
+			kaspa.initialize(kaspa, {});
+		})();
 	</script>
 	<!--script src="/node_modules/@solana/web3.js/lib/index.iife.js"></script-->
 	<!--script src="https://d3js.org/d3.v7.min.js"></script-->
-	<script type="module" src="/lib/app.js"></script>
+	<!--script type="module" src="/lib/app.js"></script-->
 </head>
 <body class="loading">
 	<kaspa-app>

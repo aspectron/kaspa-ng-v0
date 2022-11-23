@@ -1,12 +1,12 @@
 
 use crate::prelude::*;
 use workflow_ux::app_menu::AppMenu as Inner;
-use workflow_ux::{app_drawer::AppDrawer, main_menu::MainMenu, result::Result};
+use workflow_ux::{app_layout::AppLayout, main_menu::MainMenu, result::Result};
 
 #[derive(Debug, Clone)]
 pub struct AppMenu {
     inner: Arc<Inner>,
-    drawer: Arc<AppDrawer>
+    drawer: Arc<AppLayout>
 }
 
 impl AppMenu {
@@ -14,7 +14,7 @@ impl AppMenu {
     pub fn new() -> Result<Self> {
 
         let inner = Arc::new(Self::create_inner()?);
-        let drawer = AppDrawer::get("flow-app-drawers")?;
+        let drawer = AppLayout::get("flow-app-drawers")?;
         let menu = Self{
             inner,
             drawer: Arc::new(drawer)

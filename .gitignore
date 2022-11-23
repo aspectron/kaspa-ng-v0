@@ -1,5 +1,5 @@
 target
-/analyzer-target
+analyzer-target
 .DS_Store
 Cargo.lock
 node_modules
