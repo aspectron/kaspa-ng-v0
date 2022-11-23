@@ -1,8 +1,7 @@
-//kaspa.loadComponents(window.location.origin+"/static/flow-ux.js");
 use wasm_bindgen::prelude::*;
 use crate::prelude::*;
 use crate::result::Result;
-use workflow_ux::wasm::{self, bind_ux, load_component};
+use workflow_ux::wasm::{self, init_ux, load_component};
 
 
 #[macro_export]
@@ -27,6 +26,6 @@ pub fn initialize(workflow: &JsValue, modules: &JsValue)->Result<()> {
     let origin = loc.origin()?;
     load_components(origin+"/static/flow-ux.js")?;
 
-    bind_ux(workflow, modules)?;
+    init_ux(workflow, modules)?;
     Ok(())
 }
