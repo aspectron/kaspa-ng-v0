@@ -12,7 +12,9 @@ test = []
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-kaspa-protocol = { path = "../protocol" }
+kaspa-apps-core = { path = "../core" }
 
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.29"
+
+getrandom = { version = "0.2.8", features = ["js"] }

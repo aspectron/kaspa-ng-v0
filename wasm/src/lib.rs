@@ -1,2 +1,2 @@
-#[allow(unused_imports)] use kaspa_protocol::*;
+#[allow(unused_imports)] use kaspa_apps_core::*;
 

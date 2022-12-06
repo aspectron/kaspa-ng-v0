@@ -1,0 +1,18 @@
+[package]
+name = "rusty-kaspa-server"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [
+    "core",
+    "wasm",
+]
+
+[dependencies]
+workflow-http = { path = "../workflow-http" }
+async-std = { version = "1.8.0", features = ["attributes"] }
+tide = "0.16.0"
+convert_case = "0.5.0"
+rand = "0.7.3"
+duct = "0.13.5"
