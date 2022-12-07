@@ -16,12 +16,11 @@ pub struct Workspace {
 impl Workspace {
     pub fn new() -> Result<Workspace> {
         let menu = AppMenu::new()?;
-
         let inner = workspace::Workspace::new(
-            "#workspace-header",
-            "#workspace-status",
-            "#workspace-main",
-            "#workspace-sidebar",
+            "#app-header",
+            "#app-status",
+            "#app-main",
+            "#app-sidebar",
             menu.inner()
         )?;
 

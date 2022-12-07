@@ -22,8 +22,10 @@ impl Application {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Result<Application> {
 
-        let inner = Arc::new(workflow_ux::application::Application::new()?);
+        let inner = Arc::new(workflow_ux::application::Application::new(Some("kaspa-app"))?);
+        //log_trace!("AAAAA Workspace::new():started");
         let workspace = Arc::new(Workspace::new()?);
+        //log_trace!("AAAAA Workspace::new():finished");
         let user = User::new();
 
         let app = Application {
@@ -31,16 +33,14 @@ impl Application {
             inner,
             user,
         };
-    
+        
         unsafe { APPLICATION = Some(app.clone()); }
         Ok(app)
     }
 
-    pub async fn init(self) -> Result<()> {
-
+    pub async fn init(&self) -> Result<()> {
         let url = self.location();
         let fragment = url.fragment().unwrap_or("");
-
         let mut module_load_order = [
             "header",
             "status",
@@ -62,7 +62,6 @@ impl Application {
             new_order.append(&mut module_load_order);
             module_load_order = new_order;
         }
-
         self
             .inner
             .load_modules(
@@ -70,8 +69,6 @@ impl Application {
                 &module_load_order,
                 &module_disable_list,
             ).await.expect("Application::load_modules() failed");
-            //panic!("ssssss");
-
         match self.user.restore().await {
             Ok(authority) => {
                 log_trace!("Application::user restoring authority {:?}",authority);

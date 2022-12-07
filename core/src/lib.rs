@@ -15,7 +15,7 @@ pub mod init;
 //pub mod wallet;
 //pub mod transactions;
 
-//pub mod home;
+pub mod home;
 
 
 

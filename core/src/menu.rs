@@ -6,15 +6,15 @@ use workflow_ux::{app_layout::AppLayout, main_menu::MainMenu, result::Result};
 #[derive(Debug, Clone)]
 pub struct AppMenu {
     inner: Arc<Inner>,
+    #[allow(dead_code)]
     drawer: Arc<AppLayout>
 }
 
 impl AppMenu {
 
     pub fn new() -> Result<Self> {
-
         let inner = Arc::new(Self::create_inner()?);
-        let drawer = AppLayout::get("flow-app-drawers")?;
+        let drawer = AppLayout::get("workflow-app-layout")?;
         let menu = Self{
             inner,
             drawer: Arc::new(drawer)
@@ -24,6 +24,7 @@ impl AppMenu {
     }
 
     fn init(&self)->Result<()>{
+        /*
         let this = self.clone();
         let mut bottom = self.inner.bottom.lock().expect("Unable to lock BottomMenu");
         bottom.add_default_item_with_callback("Menu", Icon::Wallet, move |_ev| ->Result<()>{
@@ -39,6 +40,7 @@ impl AppMenu {
         })?;
 
         bottom.show()?;
+        */
         
         Ok(())
     }
@@ -47,7 +49,7 @@ impl AppMenu {
         let menu = Inner::new(
             "#app-menu",
             Some("#sub-menu"),
-            "#kaspa-bottom-nav",
+            None,
             Some("body")
         )?;
         Ok(menu)

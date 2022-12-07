@@ -1,3 +1,166 @@
+@font-face {
+	font-family: 'Open Sans';
+	src: url("/resources/fonts/Open-Sans.ttf") format('truetype');
+}
+@font-face {
+	font-family: 'Consolas';font-style: normal;
+	src: url("/resources/fonts/Consolas.woff") format('woff');
+}
+
+html{height:100%;font-size:16px;}
+body{
+    overflow:hidden;
+    font-family: "Open Sans";
+        /* -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol"; */
+    --flow-font-family:'Open Sans';
+    --flow-font-weight:normal;
+    
+    --workflow-app-layout-border-color:#EEE;
+    --flow-primary-color:#71b230;
+    --flow-border-color:var(--flow-primary-color);
+    --flow-background-inverse-soft:#929292;
+    height:100%;
+    --flow-app-height:100%;
+    --flow-app-width_:100%;
+    --flow-menu-divider-bg-color:#efeded;
+    --flow-menu-divider-color:#71b230;
+    --flow-menu-divider-box-shadow:none;
+    --flow-menu-divider-padding:3px 5px;
+    --flow-app-tabs-height:70px;
+    --flow-app-main-padding:0px;
+    --flow-textarea-min-height: 200px;
+    --flow-app-main-margin:0px;
+    --flow-app-main-max-width:3000px;
+    --flow-input-max-width:565px;
+    --flow-input-line-height:1.3;
+    --flow-select-selected-max-width:565px;
+    --flow-btn-border-color:var(--flow-border-color);
+    --flow-btn-secondary-bg-color:rgb(103, 239, 223);
+
+    --panel-bg-color:var(--flow-background-color);
+    --panel-box-shadow-color:#ebebeb;
+    --info-row-divider-color:#bfbfbf;
+    --icon-color-2:rgb(0, 8, 255);
+    --bottom-nav-path-fill:var(--flow-background-color);
+    --flow-app-main-overflow-y:hidden;
+    --flow-app-main-overflow-x:hidden;
+    --flow-radio-margin-right:15px;
+    --flow-radio-outer-margin:8px 10px 8px 0px;
+    --flow-overlay-color:#EFEFEF;
+    --flow-app-section-border-color:#dcdcdc;
+    --flow-side-panel-border-color:var(--flow-app-section-border-color);
+    --wallet-head-border-color:var(--flow-app-section-border-color);
+    --wallet-head-bg: var(--flow-app-section-menu-bg, #f2f2f2);
+    --wallet-head-box-shadow:0px 2px 5px #bababa;
+    --wallet-bottom-bg:var(--wallet-head-bg);
+    --workflow-terminal-background:var(--flow-background-color);
+    --workflow-terminal-foreground:var(--flow-color, #000);
+    --workflow-terminal-selection:rgb(179, 69, 69);
+    --workflow-terminal-cursor:rgb(0, 0, 0);
+    --portfolio-image-bg: var(--flow-app-section-menu-bg, #f2f2f2);
+    --portfolio-image-box-shadow:var(--wallet-head-box-shadow);
+
+    --workflow-primary-color:var(--flow-primary-color);
+    --workflow-overlay-mask-color:rgba(255, 255, 255, 0.7);
+    --workflow-popup-menu-overlay-color:var(--workflow-overley-mask-color);
+    --workflow-input-border: var(--flow-input-border, 2px) solid var(--flow-border-color, var(--flow-primary-color, rgba(0,151,115,1)));
+    --workflow-input-border-radius: var(--flow-input-border-radius, 8px);
+    --workflow-input-padding: var(--flow-input-padding,10px);
+    --workflow-input-color: var(--flow-input-color, inherit);
+    --workflow-input-font-size: var(--flow-input-font-size, 1rem);
+    --workflow-input-font-weight: var(--flow-input-font-weight, 400);
+    --workflow-input-font-family: var(--flow-input-font-family);
+    --workflow-input-line-height: var(--flow-input-line-height, 1.2);
+    --workflow-input-box-shadow: var(--flow-input-box-shadow);
+    --workflow-input-letter-spacing: var(--flow-input-letter-spacing, inherit);
+}
+body.flow-theme-dark{
+    --workflow-overlay-mask-color:rgba(0, 0, 0, 0.7);
+    --flow-app-section-border-color:#000000;
+    --wallet-head-box-shadow:0px 2px 5px #000000;
+    --portfolio-image-bg: var(--flow-app-section-menu-bg, #2a2828);
+    --wallet-head-bg: var(--flow-app-section-menu-bg, #2a2828);
+    --flow-menu-group-bg-color:rgba(0,0,0,0.4);
+    --flow-app-section-menu-bg:rgba(0,0,0,0.3);
+    --panel-box-shadow-color:#505050;
+    --info-row-divider-color:#000000;
+    --flow-app-mask-bg:rgba(0,0,0, 0.5);
+    --bottom-nav-circle-fill:var(--flow-background-color);
+    --fa-icon-color:#DEDEDE;
+    --fa-icon-fill:#DEDEDE;
+    
+    --flow-overlay-color:#0d0d0d;
+    --workflow-app-layout-border-color:var(--flow-overlay-color);
+    --flow-scrollbar-thumb-bg:var(--flow-overlay-color);
+    --flow-scrollbar-track-bg:#282828;
+    --section-divider-color:var(--flow-overlay-color);
+    --bottom-nav-circle-stroke: #444444;
+    --workflow-popup-menu-overlay-color:rgba(0, 0, 0, 0.5);
+    --flow-box-shadow:0 2px 2px 0 rgba(100,100,100,.14),
+            0 3px 1px -2px rgba(100,100,100,.2),
+            0 1px 5px 0 rgba(100,100,100,.12);
+
+    --workflow-terminal-background:var(--flow-background-color);
+    --workflow-terminal-foreground:var(--flow-color,#FFF);
+    --workflow-terminal-selection:rgb(126, 121, 185);
+    --workflow-terminal-cursor:rgb(6, 10, 240);
+    --wallet-bottom-box-shadow:0px -5px 8px #000;
+    --wallet-diff-per-bg:#010101;
+    --info-row-hover-bg-color:#3b3939;
+    --workflow-tx-notification-border-color:#000;
+    --workflow-tx-chain-border-color:#000;
+}
+a{color:var(--flow-color, inherit)}
+flow-btn{
+    --fa-icon-margin:0px 5px 0px 0px;
+}
+workflow-app-layout{
+    --flow-app-header-border-bottom:1px solid var(--workflow-app-layout-border-color);
+    --flow-app-left-drawer-border-right:1px solid var(--workflow-app-layout-border-color);
+    --flow-app-right-drawer-border-left:1px solid var(--workflow-app-layout-border-color);
+}
+
+.center{text-align:center;}
+.under-development img{
+    width:200px;
+    height:200px;
+    margin-top:50px;
+}
+[hidden]{display:none;}
+
+
 .logo{
     max-height: 50px;
+}
+.icon[icon]{
+    background:center no-repeat;
+    background-size:contain;
+}
+
+@media (max-width:1200px){
+    workflow-app-layout{
+        /*--flow-app-left-drawer-width:100%;*/
+        --flow-app-header-outer-display:none;
+        --flow-app-bottom-outer-display:block;
+    }
+    .app-menu ul .menu-group:first-child{
+        margin-top:10px;
+    }
+}
+@media (max-width:768px) {
+    body{
+        --flow-form-control-flex-wrap:wrap-reverse;
+        --flow-form-control-position:relative;
+        --flow-form-control-icon-box-position:absolute;
+        --flow-form-control-icon-box-top:0px;
+        --flow-form-control-icon-box-left:0px;
+        --flow-form-control-info-box-min-width:100%;
+        --flow-form-control-info-box-font-size:1rem;
+        --flow-form-control-info-box-padding:0px 10px 0px 30px;
+        --flow-form-control-input-box-padding:0px 10px 0px 30px;
+        --workflow-form-footer-justify-content:center;
+    }
 }
