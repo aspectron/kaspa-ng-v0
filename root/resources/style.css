@@ -29,7 +29,7 @@ body{
     --flow-menu-divider-color:#71b230;
     --flow-menu-divider-box-shadow:none;
     --flow-menu-divider-padding:3px 5px;
-    --flow-app-tabs-height:70px;
+    --flow-app-tabs-height:0px;
     --flow-app-main-padding:0px;
     --flow-textarea-min-height: 200px;
     --flow-app-main-margin:0px;
@@ -129,27 +129,25 @@ workflow-app-layout{
     height:200px;
     margin-top:50px;
 }
-[hidden]{display:none;}
-
 
 .logo{
     max-height: 50px;
 }
-.icon[icon]{
-    background:center no-repeat;
-    background-size:contain;
+.logo-text{
+    font-size: 1.3rem;
+    margin: 0px 10px;
 }
 
-@media (max-width:1200px){
-    workflow-app-layout{
-        /*--flow-app-left-drawer-width:100%;*/
-        --flow-app-header-outer-display:none;
-        --flow-app-bottom-outer-display:block;
-    }
-    .app-menu ul .menu-group:first-child{
-        margin-top:10px;
-    }
+/*
+workflow-app-layout.small-screen{
+    --flow-app-header-outer-display:none;
+    --flow-app-bottom-outer-display:block;
 }
+workflow-app-layout.small-screen .app-menu ul .menu-group:first-child{
+    margin-top:10px;
+}
+*/
+
 @media (max-width:768px) {
     body{
         --flow-form-control-flex-wrap:wrap-reverse;
@@ -164,13 +162,4 @@ workflow-app-layout{
         --workflow-form-footer-justify-content:center;
     }
 }
-.workflow-qrcode{
-    width:150px;height_:250px;
-    position: relative;
-}
-.workflow-qrcode .qr-code{
-    height:100%;
-}
-.workflow-qrcode .qr-text{
-    font-size:0.5rem;
-}
+

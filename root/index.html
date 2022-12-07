@@ -3,7 +3,7 @@
 <head>
 	<title>KASPA</title>
 	<meta name="description" content="Kaspa Wallet">
-	<meta name="theme-color" content="#EFEFEF"/>
+	<meta name="theme-color" content="#009688"/>
 	<meta name="viewport" content="width=device-width,height=device-height, user-scalable=no">
 	<link rel="apple-touch-icon" href="/resources/icons/apple-icon-precomposed.png">
 	<link rel="apple-touch-icon" sizes="152x152" href="/resources/icons/android-icon-152x152.png">
@@ -44,9 +44,10 @@
 </head>
 <body class="loading">
 	<kaspa-app>
-		<workflow-app-layout swipe-drag swipe-threshold="72" scroll-margin="70" right-drawer-toggle-icon="drawer-toggle">
+		<workflow-app-layout swipe-threshold="72" scroll-margin="70"
+			mobile-layout-max-width="1000" basic-layout="true">
 			<img slot="header" class="logo" src="/resources/images/kaspa-180x180.png" />
-			<!--div slot="header" hide-in-mobile class="logo-text">Kaspa</div-->
+			<div slot="header" hide-in-mobile class="logo-text">Kaspa</div>
 			<div slot="header" show-in-mobile class="flex"></div>
 			<div slot="header" id="app-header"></div>
 			<div slot="header-suffix"></div>
