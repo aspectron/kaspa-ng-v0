@@ -4,42 +4,38 @@ use workflow_ux::utils::markdown;
 
 pub struct Menu {
     pub root : SectionMenu,
-    pub home: MenuItem,
-    pub news: MenuItem,
     pub group: MenuGroup,
     pub test: MenuItem
 }
 
 impl Menu {
     pub fn new() -> Result<Self> {
-        let root = section_menu!(workspace().menu().main().default(), ("Home","Home"), Icon::Home1);
-        let group = menu_group!(root,"Home");
-        let home = menu_item!(group,"Home",Icon::Home2, Home::welcome);
-        let news = menu_item!(group,"News",Icon::News, Home::news);
-        let test = menu_item!(group,"Test",Icon::News, Home::test_form);
-        Ok(Self { root, home, news , group, test})
+        let root = section_menu!(workspace().menu().main().default(), ("Test","Test"), Icon::Test);
+        let group = menu_group!(root,"Test");
+        let test = menu_item!(group,"Form",Icon::News, Test::test_form);
+        Ok(Self { root, group, test})
     }
 }
 
 
 
 #[derive(Module)]
-pub struct Home {
+pub struct Test {
     pub menu : Menu 
 }
 
-impl Home {
+impl Test {
     pub fn new()->Result<Self> {
-        Ok(Home{ menu : Menu::new()? })
+        Ok(Self{ menu : Menu::new()? })
     }
 }
 
 #[async_trait_without_send]
-impl ModuleInterface for Home {
+impl ModuleInterface for Test {
 
     async fn main(self : Arc<Self>) -> Result<()>{
-        log_trace!("Home:main");
-        self.menu.home.activate()?;
+        log_trace!("test:main");
+        //self.menu.test.activate()?;
         Ok(())
     }
 }
@@ -64,7 +60,7 @@ impl FormHandler for TestForm{
     }
 }
 
-impl Home {
+impl Test {
 
     async fn news(self: Arc<Self>) -> Result<()>{
         let main = workspace().main();

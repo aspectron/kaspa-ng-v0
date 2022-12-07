@@ -1,6 +1,6 @@
 //use std::sync::atomic::{AtomicBool, Ordering};
-use kaspa_protocol::result::Result;
-use kaspa_protocol::prelude::*;
+use kaspa_core::result::Result;
+use kaspa_core::prelude::*;
 //use crate::profile::wallet::{WalletConnectHandler, wallet_adaptor};
 //use workflow_ux::local_storage;
 //use serde::{Serialize, Deserialize};

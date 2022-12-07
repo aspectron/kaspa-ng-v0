@@ -1,5 +1,5 @@
 
-extern crate self as kaspa_protocol;
+extern crate self as kaspa_core;
 
 pub mod prelude;
 pub mod error;
@@ -12,10 +12,13 @@ pub mod application;
 pub mod workspace;
 pub mod user;
 pub mod init;
-//pub mod wallet;
-//pub mod transactions;
+pub mod templates;
+pub mod status;
+pub mod wallet;
+pub mod console;
+pub mod network;
+pub mod resources;
 
-pub mod home;
 
 
 

@@ -44,11 +44,10 @@ impl Application {
         let mut module_load_order = [
             "header",
             "status",
-            "home",
             "wallet",
-            "profile",
-            "settings",
-            "transactions"
+            "console",
+            "network",
+            "resources"
         ].to_vec();
 
         let mut module_disable_list: Vec<&str> = [

@@ -22,13 +22,14 @@ pub enum Icon {
     Console,
     Connected,
     Wallet,
+    SendAndReceive,
+    Transactions,
     Help,
-    // ~
-    FlaskRed,
-    FlasksBlue,
-    FlasksRedYellow,
-    Laboratory,
-    // ~
+    Network,
+    Resources,
+    Credits,
+    Status,
+
     Ban,
     Clock,
 
@@ -37,6 +38,7 @@ pub enum Icon {
     News,
     Close,
     Cross,
+    Wip
 }
 
 impl Icon{
