@@ -9,10 +9,10 @@ class KaspaApp extends FlowApp{
     firstUpdated(...args){
         super.firstUpdated(...args);
 
-        //FIX it
-        setTimeout(()=>{
+        let layout = this.renderRoot.querySelector("workflow-app-layout");
+        layout.addEventListener("ready", ()=>{
             this.loadUX();
-        }, 1000)
+        })
     }
     async loadUX(){
         this.app = new kaspa.Application()

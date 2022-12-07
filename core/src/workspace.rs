@@ -17,10 +17,10 @@ impl Workspace {
     pub fn new() -> Result<Workspace> {
         let menu = AppMenu::new()?;
         let inner = workspace::Workspace::new(
-            "#app-header",
-            "#app-status",
-            "#app-main",
-            "#app-sidebar",
+            "#workspace-header",
+            "#workspace-status",
+            "#workspace-main",
+            "#workspace-sidebar",
             menu.inner()
         )?;
 

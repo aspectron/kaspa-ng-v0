@@ -47,8 +47,8 @@ impl AppMenu {
 
     fn create_inner()->Result<Inner>{
         let menu = Inner::new(
-            "#app-menu",
-            Some("#sub-menu"),
+            "#workspace-menu",
+            Some("#workspace-sub-menu"),
             None,
             Some("body")
         )?;
