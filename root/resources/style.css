@@ -165,16 +165,12 @@ workflow-app-layout{
     }
 }
 .workflow-qrcode{
-    width:250px;height:250px;
+    width:150px;height_:250px;
     position: relative;
 }
-.workflow-qrcode .qr-logo,
 .workflow-qrcode .qr-code{
     height:100%;
 }
-.workflow-qrcode .qr-logo{
-    position:absolute;display:none;
-    top:0px;bottom:0px;right:0px;left:0px;
-    background:no-repeat center;
-    background-size:20px 20px;
+.workflow-qrcode .qr-text{
+    font-size:0.5rem;
 }

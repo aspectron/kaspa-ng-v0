@@ -47,9 +47,9 @@ impl ModuleInterface for Home {
 #[form(title="Test Form")]
 struct TestForm{
     #[field(
-        qr_finder_color="#009688",
+        //qr_finder_color="#009688",
         qr_logo_size=20,
-        qr_text="kaspa:xxx?amount=1000000",
+        qr_text="kaspa:qqs7fxw0ekhwef84auvydshrlrd3xlmvp8z2877uhhw42lwthafe70tglrjdg?amount=10000000",
         qr_logo="/resources/images/kaspa-180x180.png"
     )]
     qrcode:qr::QRCode
