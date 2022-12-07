@@ -10,9 +10,9 @@ pub struct Menu {
 
 impl Menu {
     pub fn new() -> Result<Self> {
-        let root = section_menu!(workspace().menu().main().default(), ("Test","Test"), Icon::Test);
-        let group = menu_group!(root,"Test");
-        let test = menu_item!(group,"Form",Icon::News, Test::test_form);
+        let root = section_menu!(workspace().menu().main().default(), ("Test","Test"), Icon::Wip);
+        let group = menu_group!(root, "Test");
+        let test = menu_item!(group, "Form", Icon::Wip, Test::test_form);
         Ok(Self { root, group, test})
     }
 }

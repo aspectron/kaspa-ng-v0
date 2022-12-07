@@ -134,8 +134,9 @@ workflow-app-layout{
     max-height: 50px;
 }
 .logo-text{
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     margin: 0px 10px;
+    color:#424242;
 }
 
 /*

@@ -18,6 +18,7 @@ pub mod wallet;
 pub mod console;
 pub mod network;
 pub mod resources;
+pub mod test;
 
 
 
