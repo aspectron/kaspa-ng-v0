@@ -8,6 +8,7 @@ workflow-ux   = {path = "../../workflow-ux"}
 workflow-log  = {path = "../../workflow-log"}
 workflow-core = {path = "../../workflow-core"}
 workflow-html = {path = "../../workflow-html"}
+workflow-wasm = {path = "../../workflow-wasm"}
 
 convert_case = "0.5.0"
 thiserror = "1.0.32"

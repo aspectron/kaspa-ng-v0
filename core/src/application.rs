@@ -2,6 +2,14 @@ use std::sync::Arc;
 use crate::prelude::*;
 use crate::result::Result;
 use url::Url;
+use workflow_core::channel::{Sender, Receiver, unbounded};
+
+
+#[derive(Debug, Clone)]
+pub enum Event{
+    Halt,
+    Balance(Id)//ID just for random number test
+}
 
 #[derive(Clone)]
 #[wasm_bindgen]
@@ -11,6 +19,7 @@ pub struct Application {
     inner : Arc<workflow_ux::application::Application>,
     #[wasm_bindgen(skip)]
     pub user : User,
+    channels: Arc<Mutex<HashMap<Id,Sender<Event>>>>,
 }
 
 static mut APPLICATION : Option<Application> = None;
@@ -32,6 +41,7 @@ impl Application {
             workspace,
             inner,
             user,
+            channels : Arc::new(Mutex::new(HashMap::default())),
         };
         
         unsafe { APPLICATION = Some(app.clone()); }
@@ -92,7 +102,43 @@ impl Application {
         log_trace!("application reload..."); 
         window().location().reload().expect("Application::reload() failure");
     }
+
+    pub fn register_event_channel(&self) -> (Id, Sender<Event>, Receiver<Event>) {
+        let (sender, receiver) = unbounded();
+        let id = Id::new();
+        self.channels.lock().unwrap().insert(id, sender.clone());
+        (id, sender, receiver)
+    }
+
+    pub fn unregister_event_channel(&self, id: Id) {
+        self.channels.lock().unwrap().remove(&id);
+    }
+
+    pub fn reflect(&self, event : Event) {
+        let channels = self.channels.lock().unwrap();
+        for (_, sender) in channels.iter() {
+            match sender.try_send(event.clone()) {
+                Ok(_) => { },
+                Err(err) => {
+                    log_error!("Aplication reflect: error reflecting event {:?}: {:?}", event, err);
+                }
+            }
+        }
+    }
 }
+
+impl workflow_ux::events::Emitter<Event> for Application{
+    fn halt_event()->Option<Event> {
+        Some(Event::Halt)
+    }
+    fn register_event_channel()->(Id, Sender<Event>, Receiver<Event>) {
+        global().unwrap().register_event_channel()
+    }
+    fn unregister_event_channel(id:Id) {
+        global().unwrap().unregister_event_channel(id)
+    }
+}
+
 
 pub fn global() -> Result<Application> {
     let clone = unsafe { 
