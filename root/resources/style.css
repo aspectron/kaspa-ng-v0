@@ -1,4 +1,17 @@
 @font-face {
+	font-family:'Exo 2';font-style:normal;
+	src: url("/resources/fonts/Exo2/Exo2-Regular.ttf") format('truetype');
+}
+@font-face {
+	font-family:'Exo 2';font-style:normal;font-weight:300;
+	src: url("/resources/fonts/Exo2/Exo2-Light.ttf") format('truetype');
+}
+@font-face {
+	font-family:'Exo 2';font-style:normal; font-weight:bold;
+	src: url("/resources/fonts/Exo2/Exo2-Bold.ttf") format('truetype');
+}
+
+@font-face {
 	font-family: 'Open Sans';
 	src: url("/resources/fonts/Open-Sans.ttf") format('truetype');
 }
@@ -10,16 +23,16 @@
 html{height:100%;font-size:16px;}
 body{
     overflow:hidden;
-    font-family: "Open Sans";
+    font-family: "Exo 2";
         /* -apple-system, BlinkMacSystemFont,
         "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
         "Apple Color Emoji", "Segoe UI Emoji",
         "Segoe UI Symbol"; */
-    --flow-font-family:'Open Sans';
+    --flow-font-family:'Exo 2';
     --flow-font-weight:normal;
     
     --workflow-app-layout-border-color:#EEE;
-    --flow-primary-color:#71b230;
+    --flow-primary-color:#009688;
     --flow-border-color:var(--flow-primary-color);
     --flow-background-inverse-soft:#929292;
     height:100%;
@@ -39,6 +52,7 @@ body{
     --flow-select-selected-max-width:565px;
     --flow-btn-border-color:var(--flow-border-color);
     --flow-btn-secondary-bg-color:rgb(103, 239, 223);
+    --flow-btn-padding: 11px 8px;
 
     --panel-bg-color:var(--flow-background-color);
     --panel-box-shadow-color:#ebebeb;
@@ -129,6 +143,10 @@ workflow-app-layout{
     height:200px;
     margin-top:50px;
 }
+.icon[icon]{
+    min-height: 10px;
+    min-width: 10px;
+}
 
 .logo{
     max-height: 50px;
@@ -139,15 +157,58 @@ workflow-app-layout{
     color:#424242;
 }
 
-/*
-workflow-app-layout.small-screen{
-    --flow-app-header-outer-display:none;
-    --flow-app-bottom-outer-display:block;
+.wallet-view{
+    font-size:1.1rem;
 }
-workflow-app-layout.small-screen .app-menu ul .menu-group:first-child{
-    margin-top:10px;
+.wallet-view .balance-badge{text-align:center;margin:15px;}
+.wallet-view .balance{
+    font-size:1.2rem;
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
 }
-*/
+.wallet-view .value{font-family: "Exo 2"; font-size: 36px; margin-top: 4px;}
+.wallet-view .value-pending{
+    font-family : "Exo 2"; font-size: 20px; margin-top: 4px;
+} 
+.wallet-view .label { font-family : "Open Sans"; font-size: 20px; }
+.wallet-view .label-pending { font-family : "Open Sans"; font-size: 14px; }
+.wallet-view .balance.pending{font-size:0.9rem;margin:5px 0px;}
+.wallet-view .address-badge{padding:15px 0px;}
+.wallet-view .address-holder{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: center;
+    align-items: flex-end;
+}
+.wallet-view .address-input{
+    margin:5px 5px 0px 0px;
+    overflow:hidden;text-overflow:ellipsis;font-size:16px;
+    background-color:transparent;color:var(--flow-primary-color);
+    font-family:"Exo 2";word-wrap:break-word;
+    resize:none;
+    cursor:pointer;
+    max-width:95%;
+}
+.wallet-view .address-holder .copy-address{
+    cursor:pointer;margin:3px 0px;min-height: 20px;
+    height:20px;width:20px;
+}
+.wallet-view .qr-code-holder{
+    display:flex;align-items:flex-end;
+    justify-content:space-between;
+    margin-bottom:32px;
+}
+.wallet-view .qr-code-holder .workflow-qrcode{
+    margin-top: 50px;
+    box-shadow: var(--flow-box-shadow);
+}
+.wallet-view .buttons-holder{display:flex;align-items: flex-end;}
+.wallet-view .buttons-holder .sep{flex:1;width:20px;}
+.wallet-view .status{margin-top:10px;}
+.wallet-view .status label{padding-right:8px}
 
 @media (max-width:768px) {
     body{

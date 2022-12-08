@@ -30,6 +30,8 @@ pub enum Icon {
     Credits,
     Status,
 
+    Copy,
+
     Ban,
     Clock,
 
