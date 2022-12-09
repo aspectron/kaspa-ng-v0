@@ -27,9 +27,17 @@ pub struct Test {
 
 impl Test {
     pub fn new()->Result<Self> {
-        let cl = Closure::<dyn FnMut()>::new(||{
+        //let mut count = 0;
+        let cl = Closure::<dyn FnMut()>::new(move ||{
             //log_trace!("set_interval");
-            application().reflect(Event::Balance(Id::new()));
+            //count += 1;
+            //if count == 20{
+            //    application().reflect(Event::Halt);
+                //workflow_wasm::timers::clear_interval(_handle);
+            //}else if count < 20{
+                application().reflect(Event::Balance(Id::new()));
+            //}
+            
         });
         let _handle = workflow_wasm::timers::set_interval(&cl, 1000)?;
         log_trace!("set_interval handle: {:?}", _handle);

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use workflow_core::channel::Sender;
 use workflow_ux::result::Result;
 use workflow_ux::events::*;
 use crate::application::Event;
@@ -34,14 +35,16 @@ impl Menu {
 #[derive(Module)]
 pub struct Wallet {
     pub menu : Menu,
-    send_and_receive_view:Arc<Mutex<Option<Arc<view::DynamicHtml<Event, Application>>>>>
+    send_and_receive_view:Arc<Mutex<Option<Arc<view::Html>>>>,
+    event_sender:Arc<Mutex<Option<Sender<Event>>>>
 }
 
 impl Wallet {
     pub fn new()->Result<Self> {
         Ok(Self{
             menu : Menu::new()?,
-            send_and_receive_view:Arc::new(Mutex::new(None))
+            send_and_receive_view:Arc::new(Mutex::new(None)),
+            event_sender:Arc::new(Mutex::new(None)),
         })
     }
 }
@@ -93,7 +96,9 @@ impl Wallet {
         let view = match self.send_and_receive_view.lock()?.as_ref(){
             Some(view)=>view.clone(),
             None=>{
-                let view = view::DynamicHtml::<Event, Application>::try_new(Some(self.clone()), html!{
+                let this = self.clone();
+                let this2 = self.clone();
+                let view = view::Html::try_new(Some(self.clone()), html!{
                     <div class="wallet-view">
                         <div class="balance-badge">
                             <div class="balance">
@@ -117,8 +122,17 @@ impl Wallet {
                             <div class="buttons-holder">
                                 <flow-btn primary="true">{i18n("SEND")}</flow-btn>
                                 <div class="sep"></div>
-                                <flow-btn primary="true" role="button">{i18n("Scan QR code")}</flow-btn>
+                                <flow-btn primary="true">{i18n("Scan QR code")}</flow-btn>
                             </div>
+                        </div>
+                        <div class="buttons-holder">
+                            <div class="sep"></div>
+                            <flow-btn primary="true" !click={
+                                let _ = this.clone().subscribe();
+                            }>{i18n("Subscribe")}</flow-btn>
+                            <flow-btn primary="true"!click={
+                                let _ = this2.clone().unsubscribe();
+                            }>{i18n("Unsubscribe")}</flow-btn>
                         </div>
                         <div class="status">
                             <div><label>{i18n("Wallet Status:")}</label> {i18n("Online")}</div>
@@ -127,11 +141,6 @@ impl Wallet {
                     </div>
                 }?)?;
                 is_new = true;
-
-                let subscriber = 
-                    Arc::new(Subscriber::<Event, Application>::new(self.clone())?);
-                
-                view.with_subscriber(subscriber)?;
 
                 view
             }
@@ -145,19 +154,35 @@ impl Wallet {
         Ok(())
     }
 
-    async fn transactions(self: Arc<Self>) -> Result<()>{
-        templates::under_development().await?;
+    fn subscribe(self: Arc<Self>)->Result<()>{
+        if self.event_sender.lock()?.as_ref().is_some(){    
+            return Ok(());
+        }
+
+        let (id, sender, receiver) = Application::register_event_channel();
+        *self.event_sender.lock()? = Some(sender);
+
+        let this = self.clone();
+        subscribe(receiver, move |event|->CallbackResult{
+            Box::pin(self.clone().digest_event(event))
+        }, move ||{
+            Application::unregister_event_channel(id);
+            *this.event_sender.lock().unwrap() = None;
+        })?;
+
         Ok(())
     }
 
-    async fn settings(self: Arc<Self>) -> Result<()>{
-        templates::under_development().await?;
+    fn unsubscribe(self: Arc<Self>)->Result<()>{
+        if let Some(sender) = self.event_sender.lock()?.as_ref(){
+            sender.try_send(Event::Halt)?;
+        }
+
+        *self.event_sender.lock()? = None;
+
         Ok(())
     }
-}
 
-#[workflow_async_trait]
-impl Listener<Event> for Wallet{
     async fn digest_event(self: Arc<Self>, event:Event)->Result<bool>{
         log_info!("Wallet: got event: {:?}", event);
         match event {
@@ -173,6 +198,16 @@ impl Listener<Event> for Wallet{
             }
         }
         Ok(true)
+    }
+
+    async fn transactions(self: Arc<Self>) -> Result<()>{
+        templates::under_development().await?;
+        Ok(())
+    }
+
+    async fn settings(self: Arc<Self>) -> Result<()>{
+        templates::under_development().await?;
+        Ok(())
     }
 }
 

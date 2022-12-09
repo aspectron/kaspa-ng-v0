@@ -103,14 +103,22 @@ impl Application {
         window().location().reload().expect("Application::reload() failure");
     }
 
-    pub fn register_event_channel(&self) -> (Id, Sender<Event>, Receiver<Event>) {
+    pub fn register_event_channel()-> (Id, Sender<Event>, Receiver<Event>){
+        application().register_event_channel_impl()
+    }
+
+    pub fn register_event_channel_impl(&self) -> (Id, Sender<Event>, Receiver<Event>) {
         let (sender, receiver) = unbounded();
         let id = Id::new();
         self.channels.lock().unwrap().insert(id, sender.clone());
         (id, sender, receiver)
     }
 
-    pub fn unregister_event_channel(&self, id: Id) {
+    pub fn unregister_event_channel(id: Id) {
+        application().unregister_event_channel_impl(id);
+    }
+
+    pub fn unregister_event_channel_impl(&self, id: Id) {
         self.channels.lock().unwrap().remove(&id);
     }
 
@@ -124,18 +132,6 @@ impl Application {
                 }
             }
         }
-    }
-}
-
-impl workflow_ux::events::Emitter<Event> for Application{
-    fn halt_event()->Option<Event> {
-        Some(Event::Halt)
-    }
-    fn register_event_channel()->(Id, Sender<Event>, Receiver<Event>) {
-        global().unwrap().register_event_channel()
-    }
-    fn unregister_event_channel(id:Id) {
-        global().unwrap().unregister_event_channel(id)
     }
 }
 
