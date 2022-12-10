@@ -35,14 +35,14 @@ impl Menu {
 #[derive(Module)]
 pub struct Wallet {
     pub menu : Menu,
-    send_and_receive_view:Arc<Mutex<Option<Arc<WalletView>>>>,
+    wallet_view:Arc<Mutex<Option<Arc<WalletView>>>>,
 }
 
 impl Wallet {
     pub fn new()->Result<Self> {
         Ok(Self{
             menu : Menu::new()?,
-            send_and_receive_view:Arc::new(Mutex::new(None))
+            wallet_view:Arc::new(Mutex::new(None))
         })
     }
 }
@@ -80,6 +80,8 @@ impl FormHandler for TestForm{
 */
 
 #[derive(HtmlView)]
+#[evict_handler="on_evict"] // <-- self.on_evict();
+//#[evict_handler] //<-- self.evict_handler();
 pub struct WalletView{
     event_sender:Arc<Mutex<Option<Sender<Event>>>>,
     html:Arc<Mutex<Option<Arc<view::Html>>>>
@@ -158,7 +160,7 @@ impl WalletView{
         }?)?;
 
         *self.html.lock()? = Some(view);
-        self.subscribe()?;
+        //self.subscribe()?;
         Ok(())
     }
 
@@ -181,7 +183,6 @@ impl WalletView{
                     Ok(false)
                 }
             })
-            //Box::pin(test(event))
         }, move ||{
             Application::unregister_event_channel(id);
             if let Some(c) = this2.clone().upgrade(){
@@ -221,6 +222,12 @@ impl WalletView{
         Ok(true)
     }
 
+    fn on_evict(&self)->Result<()>{
+        println!("WalletView: on_evict:");
+        self.unsubscribe()?;
+        Ok(())
+    }
+
 }
 
 
@@ -230,7 +237,7 @@ impl Wallet {
         let main = workspace().main();
         main.swap_from().await?;
         let mut is_new = false;
-        let view = match self.send_and_receive_view.lock()?.as_ref(){
+        let view = match self.wallet_view.lock()?.as_ref(){
             Some(view)=>view.clone(),
             None=>{
                 let view = WalletView::new(self.clone())?;
@@ -240,10 +247,12 @@ impl Wallet {
         };
 
         if is_new{
-            *self.send_and_receive_view.lock()? = Some(view.clone());
+            *self.wallet_view.lock()? = Some(view.clone());
         }
 
+        view.clone().subscribe()?;
         main.swap_to(view).await?;
+       
         Ok(())
     }
 
