@@ -80,8 +80,6 @@ impl FormHandler for TestForm{
 */
 
 #[derive(HtmlView)]
-#[evict_handler="on_evict"] // <-- self.on_evict();
-//#[evict_handler] //<-- self.evict_handler();
 pub struct WalletView{
     event_sender:Arc<Mutex<Option<Sender<Event>>>>,
     html:Arc<Mutex<Option<Arc<view::Html>>>>
@@ -109,7 +107,7 @@ impl WalletView{
         let qr_code = qr::QRCode::create(address, qr_options)?;
 
 
-        let this = Arc::downgrade(&self);
+        let this = self.clone();//Arc::downgrade(&self);
         let this2 = Arc::downgrade(&self);
 
         let view = view::Html::try_new(Some(module), html!{
@@ -142,9 +140,9 @@ impl WalletView{
                 <div class="buttons-holder">
                     <div class="sep"></div>
                     <flow-btn primary="true" !click={
-                        if let Some(c) = this.clone().upgrade(){
-                            let _ = c.subscribe();
-                        }
+                        //if let Some(c) = this.clone().upgrade(){
+                            let _ = this.clone().subscribe();
+                        //}
                     }>{i18n("Subscribe")}</flow-btn>
                     <flow-btn primary="true"!click={
                         if let Some(c) = this2.clone().upgrade(){
@@ -160,7 +158,6 @@ impl WalletView{
         }?)?;
 
         *self.html.lock()? = Some(view);
-        //self.subscribe()?;
         Ok(())
     }
 
@@ -222,10 +219,10 @@ impl WalletView{
         Ok(true)
     }
 
-    fn on_evict(&self)->Result<()>{
-        println!("WalletView: on_evict:");
+    async fn view_evict(self:Arc<Self>)->Result<bool>{
+        log_info!("WalletView: view_evict");
         self.unsubscribe()?;
-        Ok(())
+        Ok(false)
     }
 
 }
