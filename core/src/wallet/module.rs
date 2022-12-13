@@ -85,6 +85,16 @@ pub struct WalletView{
     html:Arc<Mutex<Option<Arc<view::Html>>>>
 }
 
+#[workflow_async_trait]
+impl Evict for WalletView{
+
+    async fn evict(self:Arc<Self>)->Result<bool>{
+        log_info!("WalletView: view_evict");
+        //self.unsubscribe()?;
+        Ok(false)
+    }
+}
+
 impl WalletView{
     fn new(module:Arc<Wallet>)->Result<Arc<Self>>{
         let view = Arc::new(Self{
@@ -219,12 +229,6 @@ impl WalletView{
         Ok(true)
     }
 
-    async fn view_evict(self:Arc<Self>)->Result<bool>{
-        log_info!("WalletView: view_evict");
-        self.unsubscribe()?;
-        Ok(false)
-    }
-
 }
 
 
@@ -244,7 +248,7 @@ impl Wallet {
         };
 
         if is_new{
-            *self.wallet_view.lock()? = Some(view.clone());
+            //*self.wallet_view.lock()? = Some(view.clone());
         }
 
         view.clone().subscribe()?;
