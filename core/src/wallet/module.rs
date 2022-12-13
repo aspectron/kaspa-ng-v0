@@ -248,7 +248,7 @@ impl Wallet {
         };
 
         if is_new{
-            //*self.wallet_view.lock()? = Some(view.clone());
+            *self.wallet_view.lock()? = Some(view.clone());
         }
 
         view.clone().subscribe()?;
