@@ -8,7 +8,8 @@ use workflow_core::channel::{Sender, Receiver, unbounded};
 #[derive(Debug, Clone)]
 pub enum Event{
     Halt,
-    Balance(Id)//ID just for random number test
+    Balance(Id),//ID just for random number test
+    Blocks(u32)
 }
 
 #[derive(Clone)]

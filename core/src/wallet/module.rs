@@ -225,6 +225,9 @@ impl WalletView{
             Event::Halt=>{
                 return Ok(false)
             }
+            _=>{
+                
+            }
         }
         Ok(true)
     }

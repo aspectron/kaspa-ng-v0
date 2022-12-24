@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use workflow_ux::result::Result;
+use crate::network::view::*;
 
 pub struct Menu {
     pub root : SectionMenu,
@@ -31,12 +32,16 @@ impl Menu {
 
 #[derive(Module)]
 pub struct Network {
-    pub menu : Menu 
+    pub menu : Menu,
+    node_view: Arc<Mutex<Option<Arc<NodeView>>>>,
 }
 
 impl Network {
     pub fn new()->Result<Self> {
-        Ok(Self{ menu : Menu::new()? })
+        Ok(Self{
+            menu : Menu::new()?,
+            node_view: Arc::new(Mutex::new(None))
+        })
     }
 }
 
@@ -51,7 +56,21 @@ impl ModuleInterface for Network {
 impl Network {
 
     async fn node(self: Arc<Self>) -> Result<()>{
-        templates::under_development().await?;
+        let main = workspace().main();
+        main.swap_from().await?;
+
+        let view = self.node_view.lock()?.clone();
+        let view = match view{
+            Some(view)=>view,
+            None=>{
+                let view = NodeView::new(self.clone())?;
+                //*self.node_view.lock()? = Some(view.clone());
+                view
+            }
+        };
+
+        view.clone().subscribe()?;
+        main.swap_to(view).await?;
         Ok(())
     }
 

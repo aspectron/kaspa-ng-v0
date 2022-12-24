@@ -90,6 +90,17 @@ body{
     --workflow-input-line-height: var(--flow-input-line-height, 1.2);
     --workflow-input-box-shadow: var(--flow-input-box-shadow);
     --workflow-input-letter-spacing: var(--flow-input-letter-spacing, inherit);
+
+    --flow-data-badge-caption: #000;
+    --flow-data-badge-caption-shadow: rgba(0,151,115,1.0);
+    --flow-data-badge-graph-fill:  rgb(0, 105, 95, 0.15);
+    --flow-data-badge-graph-stroke:  rgba(0, 105, 95, 1.0);
+    --flow-data-badge-graph-stroke-width: 1px;
+    --flow-data-badge-graph-stroke-opacity: 0.3;    
+    --flow-graph-fill:  rgb(0, 105, 95, 0.15);
+    --flow-graph-stroke:  rgba(0, 105, 95, 1.0);
+    --flow-graph-stroke-width: 1px;
+    --flow-graph-stroke-opacity: 0.3;
 }
 body.flow-theme-dark{
     --workflow-overlay-mask-color:rgba(0, 0, 0, 0.7);
@@ -125,9 +136,21 @@ body.flow-theme-dark{
     --wallet-diff-per-bg:#010101;
     --info-row-hover-bg-color:#3b3939;
     --workflow-tx-notification-border-color:#000;
-    --workflow-tx-chain-border-color:#000;
+    --workflow-tx-chain-border-color:#000;  
+    --flow-data-badge-value: #fff;
+    --flow-data-badge-caption: #ccc;
+    --flow-data-badge-caption-shawod: rgba(0,151,115,1.0);
+    --flow-data-badge-graph-fill:  rgb(0, 105, 95, 0.5);
+    --flow-data-badge-graph-stroke:  rgb(1, 138, 124);
+    --flow-data-badge-graph-stroke-width: 1px;
+    --flow-data-badge-graph-stroke-opacity: 0.75;
 }
 a{color:var(--flow-color, inherit)}
+
+flow-data-badge-graph{
+    min-width:128px;
+}
+
 flow-btn{
     --fa-icon-margin:0px 5px 0px 0px;
 }

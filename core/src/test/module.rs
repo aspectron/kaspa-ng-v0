@@ -36,10 +36,12 @@ impl Test {
                 //workflow_wasm::timers::clear_interval(_handle);
             //}else if count < 20{
                 application().reflect(Event::Balance(Id::new()));
+
+                application().reflect(Event::Blocks(Id::new().to_bytes()[0] as u32));
             //}
             
         });
-        let _handle = workflow_wasm::timers::set_interval(&cl, 1000)?;
+        let _handle = workflow_wasm::timers::set_interval(&cl, 500)?;
         log_trace!("set_interval handle: {:?}", _handle);
         cl.forget();
 
