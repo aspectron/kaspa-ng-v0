@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@aspectron/flow-ux": "^1.0.6"
+    "@aspectron/flow-ux": "github:aspectron/flow-ux",
+    "lit": "*"
   }
 }
