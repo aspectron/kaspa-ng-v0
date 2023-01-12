@@ -1,0 +1,43 @@
+[package]
+name = "wallet"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rand_core= { version = "0.6", features = ["std"] }
+workflow-log = {path="../../workflow-log", features=[]}
+bip32 = {version = "0.4.0"}
+hex = "*"
+addresses = {path="../../rusty-kaspa/crypto/addresses"}
+
+[dependencies.bs58]
+version = "0.4"
+features = ["check"]
+default-features = false
+
+[dependencies.hmac]
+version = "0.12"
+default-features = false
+
+[dependencies.k256]
+version = "0.11"
+features = [
+    "ecdsa",
+    "sha256",
+    "keccak256",
+]
+optional = true
+default-features = false
+
+[dependencies.sha2]
+version = "0.10"
+default-features = false
+
+[dependencies.zeroize]
+version = "1"
+default-features = false
+
+[dependencies.ripemd]
+version = "0.1"
+default-features = false
+

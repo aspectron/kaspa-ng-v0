@@ -18,21 +18,6 @@ async fn main() -> Result<(), Error> {
     use std::{fs, io, collections::BTreeMap};
     use std::path::Path;
     use duct::cmd;
-    
-
-    //let tokens = 
-    // crate::tokens::fetch_tokens().await?;
-    //println!("tokens: {}", tokens);
-    
-    //TODO: use of easy_flag or clap
-    //TODO: Split builder/server
-    let args: Vec<String> = std::env::args().collect();
-    let create_static:bool = args.contains(&"--build-static".to_string());
-
-    if create_static{
-        builder::create_static()?;
-        return Ok(());
-    }
 
     // ~~~
 
