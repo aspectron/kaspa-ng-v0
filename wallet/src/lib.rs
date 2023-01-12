@@ -1,6 +1,7 @@
 
 use wasm_bindgen::prelude::*;
 use workflow_log::log_trace;
+use workflow_core::task::yield_now;
 
 mod address_type;
 mod xkey;
@@ -39,11 +40,13 @@ async fn test()->Result<()>{
 
     let mut receive_addresses : Vec<String>= Vec::new();
     let mut change_addresses : Vec<String>= Vec::new();
-    for index in 0..10{
+    for index in 0..50{
         let address = hd_wallet.derive_address(AddressType::Receive, index).await?;
         receive_addresses.push(address.into());
+        yield_now().await;
         let address = hd_wallet.derive_address(AddressType::Change, index).await?;
         change_addresses.push(address.into());
+        yield_now().await;
     }
 
     log_trace!("Receive addresses:");

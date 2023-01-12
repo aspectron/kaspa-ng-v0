@@ -28,6 +28,9 @@
 		body.loading:after,
 		body:not(.loading) kaspa-app{opacity:1}
 	</style>
+	<!--script src="/node_modules/@solana/web3.js/lib/index.iife.js"></script-->
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<!--script type="module" src="/lib/app.js"></script-->
 	<script>
 		(async()=>{
 			let kaspa = await import('../kaspa/kaspa.js');
@@ -37,13 +40,19 @@
 			kaspa.init_console_panic_hook();
 			//kaspa.show_panic_hook_logs();
 			kaspa.initialize(kaspa, {});
-			let a = kaspa.test_addresses();
-			console.log("sssss2", a);
+			console.log("init done...");
+			setTimeout(async () => {
+				console.log("testing addresses...");
+				let a = await kaspa.test_addresses();
+				console.log("sssss2", a);
+			},10000);
+
+			let idx = 0;
+			setInterval(() => {
+				console.log(`idx[${idx++}]`);
+			}, 1000);
 		})();
 	</script>
-	<!--script src="/node_modules/@solana/web3.js/lib/index.iife.js"></script-->
-	<script src="https://d3js.org/d3.v7.min.js"></script>
-	<!--script type="module" src="/lib/app.js"></script-->
 </head>
 <body class="loading">
 	<kaspa-app>

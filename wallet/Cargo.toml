@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 rand_core= { version = "0.6", features = ["std"] }
 workflow-log = {path="../../workflow-log", features=[]}
+workflow-core = {path="../../workflow-core" }
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.29"
 bip32 = {version = "0.4.0", default-features=false, features=["secp256k1-ffi", "alloc"]}
