@@ -1,7 +1,9 @@
 
+use std::time::Duration;
+
 use wasm_bindgen::prelude::*;
 use workflow_log::log_trace;
-use workflow_core::task::yield_now;
+use workflow_core::task::*;
 
 mod address_type;
 mod xkey;
@@ -47,6 +49,8 @@ async fn test()->Result<()>{
         let address = hd_wallet.derive_address(AddressType::Change, index).await?;
         change_addresses.push(address.into());
         yield_now().await;
+        log_trace!("generating {}",index);
+        sleep(Duration::from_secs(0)).await;
     }
 
     log_trace!("Receive addresses:");
@@ -102,6 +106,10 @@ fn main() {
 
 #[wasm_bindgen]
 pub async fn test_addresses(){
-    let result = test().await;
-    log_trace!("result: {:?}", result);
+
+    spawn(async move {
+        log_trace!("testing addresses");
+        let result = test().await;
+        log_trace!("result: {:?}", result);
+    });
 }
