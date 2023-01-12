@@ -1,12 +1,14 @@
 [package]
-name = "wallet"
+name = "kaspa-wallet"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 rand_core= { version = "0.6", features = ["std"] }
 workflow-log = {path="../../workflow-log", features=[]}
-bip32 = {version = "0.4.0"}
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
+wasm-bindgen-futures = "0.4.29"
+bip32 = {version = "0.4.0", default-features=false, features=["secp256k1-ffi", "alloc"]}
 hex = "*"
 addresses = {path="../../rusty-kaspa/crypto/addresses"}
 
@@ -19,15 +21,9 @@ default-features = false
 version = "0.12"
 default-features = false
 
-[dependencies.k256]
-version = "0.11"
-features = [
-    "ecdsa",
-    "sha256",
-    "keccak256",
-]
-optional = true
-default-features = false
+[dependencies.secp256k1-ffi]
+version = "0.21"
+package = "secp256k1"
 
 [dependencies.sha2]
 version = "0.10"

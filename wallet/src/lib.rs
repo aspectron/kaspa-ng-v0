@@ -1,4 +1,7 @@
 
+use wasm_bindgen::prelude::*;
+use workflow_log::log_trace;
+
 mod address_type;
 mod xkey;
 mod xpub;
@@ -6,7 +9,7 @@ use address_type::AddressType;
 use xkey::{HDWallet, Result, Prefix};
 
 
-fn test()->Result<()>{
+async fn test()->Result<()>{
 
     // Generate random Mnemonic using the default language (English)
     //let mnemonic = Mnemonic::random(&mut OsRng, Default::default());
@@ -27,29 +30,29 @@ fn test()->Result<()>{
 
     //let xpriv = child_xprv.to_string(Prefix::XPRV);
     //let xpub = child_xpub.to_string(Prefix::XPUB);
-    let xpriv_str = "xprv......";//xpriv.as_str();
+    let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57";//xpriv.as_str();
     let hd_wallet = HDWallet::from_str(xpriv_str)?;
     let xpriv = hd_wallet.to_string();
     let xpub = hd_wallet.public_key().to_string(Prefix::XPUB);
-    println!("xpriv: {}", xpriv.as_str());
-    println!("xpub : {}", xpub);
+    log_trace!("xpriv: {}", xpriv.as_str());
+    log_trace!("xpub : {}", xpub);
 
     let mut receive_addresses : Vec<String>= Vec::new();
     let mut change_addresses : Vec<String>= Vec::new();
     for index in 0..10{
-        let address = hd_wallet.derive_address(AddressType::Receive, index)?;
+        let address = hd_wallet.derive_address(AddressType::Receive, index).await?;
         receive_addresses.push(address.into());
-        let address = hd_wallet.derive_address(AddressType::Change, index)?;
+        let address = hd_wallet.derive_address(AddressType::Change, index).await?;
         change_addresses.push(address.into());
     }
 
-    println!("Receive addresses:");
+    log_trace!("Receive addresses:");
     for (index, address)in receive_addresses.iter().enumerate(){
-        println!("#{index}: {}", address);
+        log_trace!("#{index}: {}", address);
     }
-    println!("Change addresses:");
+    log_trace!("Change addresses:");
     for (index, address)in change_addresses.iter().enumerate(){
-        println!("#{index}: {}", address);
+        log_trace!("#{index}: {}", address);
     }
 
     
@@ -86,7 +89,16 @@ fn test()->Result<()>{
     Ok(())
 }
 
+/*
 fn main() {
     let result = test();
     println!("result: {:?}", result);
+}
+*/
+
+
+#[wasm_bindgen]
+pub async fn test_addresses(){
+    let result = test().await;
+    log_trace!("result: {:?}", result);
 }

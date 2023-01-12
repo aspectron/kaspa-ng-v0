@@ -1,7 +1,8 @@
 pub use bip32::{
-    Prefix, ExtendedKeyAttrs, PrivateKey, Error, ExtendedPrivateKey, 
-    secp256k1::ecdsa::SigningKey
+    Prefix, ExtendedKeyAttrs, PrivateKey, Error, ExtendedPrivateKey,
+    PublicKey
 };
+use secp256k1_ffi::SecretKey as SigningKey;
 use bip32::{KEY_SIZE, ChildNumber, ExtendedKey, PrivateKeyBytes};
 use hmac::Mac;
 
@@ -43,7 +44,7 @@ impl HDWallet{
         Ok(key)
     }
 
-    pub fn derive_address(&self, address_type: AddressType, index: i32)->Result<Address>{
+    pub async fn derive_address(&self, address_type: AddressType, index: i32)->Result<Address>{
         let address_path = format!("44'/972/0'/{}'/{}'", address_type.index(), index);
         let children = address_path.split("/");
         let mut key = self.clone();
@@ -58,7 +59,7 @@ impl HDWallet{
                 key2.to_string(Prefix::XPRV).as_str()
             );
             */
-            key = key.derive_child(c.clone())?;
+            key = key.derive_child(c.clone()).await?;
         }
 
         let pubkey = &key.public_key().to_bytes()[1..];
@@ -71,7 +72,7 @@ impl HDWallet{
         Ok(address)
     }
 
-    pub fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
+    pub async fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
 
         let digest = Ripemd160::digest(&Sha256::digest(&self.private_key.public_key().to_bytes()[1..]));
         let fingerprint = digest[..4].try_into().expect("digest truncated");
