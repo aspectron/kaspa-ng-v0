@@ -32,6 +32,51 @@
 	<script src="https://d3js.org/d3.v7.min.js"></script>
 	<!--script type="module" src="/lib/app.js"></script-->
 	<script>
+		let list = [];
+		let count = 0;
+		let node = document.createTextNode("");
+		let observer = new MutationObserver(()=>{
+			//console.log("ssss")
+			run();
+		});
+
+		observer.observe(node, {characterData: true});
+		async function run(){
+			
+			/*
+			let fn = list.pop()
+			if (fn){
+				fn();
+			}
+			*/
+			
+			
+			let len = list.length;
+			for (let i = 0; i < len; i++) {
+    			let fn = list[i];
+				if (fn){
+					fn();
+				}
+			}
+
+			list.splice(0, len);
+			
+		}
+		
+		setInterval(run, 1);
+		
+		function yield_now(){
+			//console.log("yield_now in js0")
+			return new Promise((resolve)=>{
+				//console.log("yield_now in js1")
+				//requestAnimationFrame(resolve);
+				//requestIdleCallback(resolve)
+				list.push(resolve);
+				node.textContent = count++;
+				//resolve();
+			})
+		}
+
 		(async()=>{
 			let kaspa = await import('../kaspa/kaspa.js');
 			const wasm = await kaspa.default('/kaspa/kaspa_bg.wasm');
@@ -42,9 +87,11 @@
 			kaspa.initialize(kaspa, {});
 			console.log("init done...");
 			setTimeout(async () => {
-				console.log("testing addresses...");
-				let a = await kaspa.test_addresses();
-				console.log("sssss2", a);
+				new Promise(async()=>{
+					console.log("testing addresses...");
+					let a = await kaspa.test_addresses();
+					console.log("sssss2", a);
+				})
 			},10);
 
 			let idx = 0;

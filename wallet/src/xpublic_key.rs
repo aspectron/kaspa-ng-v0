@@ -1,15 +1,22 @@
 //! Extended public keys
-
-use bip32::{
-    ChildNumber, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey,
-    KeyFingerprint, Prefix, PrivateKey, PublicKey, PublicKeyBytes, Result, KEY_SIZE,
-};
+//! 
 use core::str::FromStr;
-use crate::xkey::HmacSha512;
 use hmac::Mac;
-
-#[cfg(feature = "alloc")]
-use alloc::string::{String, ToString};
+use crate::{
+    types::*,
+    PrivateKey,
+    PublicKey,
+    ChildNumber,
+    Error,
+    ExtendedKey, 
+    ExtendedKeyAttrs, 
+    ExtendedPrivateKey,
+    KeyFingerprint,
+    Prefix,
+    PublicKeyBytes, 
+    Result,
+    KEY_SIZE,
+};
 
 /// Extended public secp256k1 ECDSA verification key.
 //#[cfg(feature = "secp256k1")]
@@ -94,11 +101,8 @@ where
         }
     }
 
-    /// Serialize this key as a `String`.
-    //#[cfg(feature = "alloc")]
-    //#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
-    pub fn to_string(&self, prefix: Prefix) -> String {
-        self.to_extended_key(prefix).to_string()
+    pub fn to_string(&self) -> String {
+        self.to_extended_key(Prefix::XPUB).to_string()
     }
 }
 

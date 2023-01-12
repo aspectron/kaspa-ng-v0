@@ -1,15 +1,54 @@
 
 use std::time::Duration;
-
 use wasm_bindgen::prelude::*;
 use workflow_log::log_trace;
 use workflow_core::task::*;
 
-mod address_type;
+//use bip32;
+
+mod xprivate_key;
+mod xpublic_key;
+mod private_key;
+mod public_key;
 mod xkey;
-mod xpub;
-use address_type::AddressType;
-use xkey::{HDWallet, Result, Prefix};
+
+mod address_type;
+mod types;
+mod error;
+mod result;
+mod hd_wallet;
+mod attrs;
+mod child_number;
+mod prefix;
+
+pub use xprivate_key::ExtendedPrivateKey;
+pub use xpublic_key::ExtendedPublicKey;
+pub use private_key::PrivateKey;
+pub use public_key::PublicKey;
+pub use xkey::ExtendedKey;
+pub use attrs::ExtendedKeyAttrs;
+pub use prefix::Prefix;
+pub use child_number::ChildNumber;
+pub use types::*;
+pub use address_type::AddressType;
+pub use hd_wallet::HDWallet;
+
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_name = yield_now)]
+    fn yield_now_impl()->js_sys::Promise;
+}
+
+
+pub async fn yield_now(){
+    let _ = wasm_bindgen_futures::JsFuture::from(yield_now_impl()).await;
+}
+
+
+pub async fn yield_now1(){
+    sleep(Duration::from_secs(1)).await;
+}
 
 
 async fn test()->Result<()>{
@@ -34,23 +73,25 @@ async fn test()->Result<()>{
     //let xpriv = child_xprv.to_string(Prefix::XPRV);
     //let xpub = child_xpub.to_string(Prefix::XPUB);
     let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57";//xpriv.as_str();
-    let hd_wallet = HDWallet::from_str(xpriv_str)?;
+    let hd_wallet = HDWallet::from_str(xpriv_str).await?;
     let xpriv = hd_wallet.to_string();
-    let xpub = hd_wallet.public_key().to_string(Prefix::XPUB);
+    let xpub = hd_wallet.public_key().to_string();
     log_trace!("xpriv: {}", xpriv.as_str());
     log_trace!("xpub : {}", xpub);
 
     let mut receive_addresses : Vec<String>= Vec::new();
     let mut change_addresses : Vec<String>= Vec::new();
-    for index in 0..50{
-        let address = hd_wallet.derive_address(AddressType::Receive, index).await?;
+    for index in 0..500{
+        let address = hd_wallet.derive_receive_address(index).await?;
         receive_addresses.push(address.into());
-        yield_now().await;
-        let address = hd_wallet.derive_address(AddressType::Change, index).await?;
+        //yield_now().await;
+        let address = hd_wallet.derive_change_address(index).await?;
         change_addresses.push(address.into());
-        yield_now().await;
-        log_trace!("generating {}",index);
-        sleep(Duration::from_secs(0)).await;
+        //yield_now().await;
+        if index % 50 == 0{
+            log_trace!("generating {}", index);
+        }
+        //sleep(Duration::from_secs(1)).await;
     }
 
     log_trace!("Receive addresses:");
@@ -107,9 +148,9 @@ fn main() {
 #[wasm_bindgen]
 pub async fn test_addresses(){
 
-    spawn(async move {
+    //spawn(async move {
         log_trace!("testing addresses");
         let result = test().await;
         log_trace!("result: {:?}", result);
-    });
+    //});
 }

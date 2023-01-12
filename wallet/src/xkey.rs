@@ -1,253 +1,157 @@
-pub use bip32::{
-    Prefix, ExtendedKeyAttrs, PrivateKey, Error, ExtendedPrivateKey,
-    PublicKey
+//! Parser for extended key types (i.e. `xprv` and `xpub`)
+
+use crate::{ChildNumber, Error, ExtendedKeyAttrs, Prefix, Result, Version, KEY_SIZE};
+use core::{
+    fmt::{self, Display},
+    str::{self, FromStr},
 };
-use secp256k1_ffi::SecretKey as SigningKey;
-use bip32::{KEY_SIZE, ChildNumber, ExtendedKey, PrivateKeyBytes};
-use hmac::Mac;
+use zeroize::Zeroize;
 
-use std::fmt::Debug;
-use std::str::FromStr;
-use zeroize::Zeroizing;
-//use zeroize::Zeroize;
-use ripemd::Ripemd160;
-use sha2::{Digest, Sha256};
-use addresses::{Address, Prefix as AddressPrefix};
-
-pub type Result<T> = core::result::Result<T, Error>;
-pub type HmacSha512 = hmac::Hmac<sha2::Sha512>;
-
-use crate::AddressType;
-use crate::xpub::ExtendedPublicKey;
-use workflow_core::task::*;
-use std::time::Duration;
-
-
+/// Serialized extended key (e.g. `xprv` and `xpub`).
 #[derive(Clone)]
-pub struct HDWallet {
-    /// Derived private key
-    private_key: SigningKey,
+pub struct ExtendedKey {
+    /// [`Prefix`] (a.k.a. "version") of the key (e.g. `xprv`, `xpub`)
+    pub prefix: Prefix,
 
     /// Extended key attributes.
-    attrs: ExtendedKeyAttrs,
+    pub attrs: ExtendedKeyAttrs,
+
+    /// Key material (may be public or private).
+    ///
+    /// Includes an extra byte for a public key's SEC1 tag.
+    pub key_bytes: [u8; KEY_SIZE + 1],
 }
 
-impl HDWallet{
+impl ExtendedKey {
+    /// Size of an extended key when deserialized into bytes from Base58.
+    pub const BYTE_SIZE: usize = 78;
 
-    pub fn from_str(xpriv: &str)->Result<Self>{
-        let xpriv_key = ExtendedPrivateKey::<SigningKey>::from_str(xpriv)?;
-        let attrs = xpriv_key.attrs().clone();
+    /// Maximum size of a Base58Check-encoded extended key in bytes.
+    ///
+    /// Note that extended keys can also be 111-bytes.
+    pub const MAX_BASE58_SIZE: usize = 112;
 
-        let key =  Self{
-            private_key: xpriv_key.private_key().clone(),
-            attrs
-        };
-    
-        Ok(key)
+    /// Write a Base58-encoded key to the provided buffer, returning a `&str`
+    /// containing the serialized data.
+    ///
+    /// Note that this type also impls [`Display`] and therefore you can
+    /// obtain an owned string by calling `to_string()`.
+    pub fn write_base58<'a>(&self, buffer: &'a mut [u8; Self::MAX_BASE58_SIZE]) -> Result<&'a str> {
+        let mut bytes = [0u8; Self::BYTE_SIZE]; // with 4-byte checksum
+        bytes[..4].copy_from_slice(&self.prefix.to_bytes());
+        bytes[4] = self.attrs.depth;
+        bytes[5..9].copy_from_slice(&self.attrs.parent_fingerprint);
+        bytes[9..13].copy_from_slice(&self.attrs.child_number.to_bytes());
+        bytes[13..45].copy_from_slice(&self.attrs.chain_code);
+        bytes[45..78].copy_from_slice(&self.key_bytes);
+
+        let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
+        bytes.zeroize();
+
+        str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
     }
+}
 
-    pub async fn derive_address(&self, address_type: AddressType, index: i32)->Result<Address>{
-        let address_path = format!("44'/972/0'/{}'/{}'", address_type.index(), index);
-        let children = address_path.split("/");
-        let mut key = self.clone();
-        for child in children{
-            let c = child.parse::<ChildNumber>()?;
-            //key = key.derive_child(c.clone())?;
-            //println!("\nc:    {c:?}");
-            //println!("key: {:#?}", key2);
-            /*
-            println!("key: {:?}",
-                //key.to_string(Prefix::XPRV).as_str(),
-                key2.to_string(Prefix::XPRV).as_str()
-            );
-            */
-            key = key.derive_child(c.clone()).await?;
-            sleep(Duration::from_secs(0)).await;
+impl Display for ExtendedKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut buf = [0u8; Self::MAX_BASE58_SIZE];
+        self.write_base58(&mut buf)
+            .map_err(|_| fmt::Error)
+            .and_then(|base58| f.write_str(base58))
+    }
+}
 
+impl FromStr for ExtendedKey {
+    type Err = Error;
+
+    fn from_str(base58: &str) -> Result<Self> {
+        let mut bytes = [0u8; Self::BYTE_SIZE + 4]; // with 4-byte checksum
+        let decoded_len = bs58::decode(base58).with_check(None).into(&mut bytes)?;
+
+        if decoded_len != Self::BYTE_SIZE {
+            return Err(Error::Decode);
         }
 
-        let pubkey = &key.public_key().to_bytes()[1..];
-        let address = Address{
-            prefix: AddressPrefix::Mainnet,
-            version: 0,
-            payload: pubkey.to_vec()
-        };
+        let prefix = base58.get(..4).ok_or(Error::Decode).and_then(|chars| {
+            Prefix::validate_str(chars)?;
+            let version = Version::from_be_bytes(bytes[..4].try_into()?);
+            Ok(Prefix::from_parts_unchecked(chars, version))
+        })?;
 
-        Ok(address)
-    }
-
-    pub async fn derive_child(&self, child_number: ChildNumber) -> Result<Self> {
-
-        let digest = Ripemd160::digest(&Sha256::digest(&self.private_key.public_key().to_bytes()[1..]));
-        let fingerprint = digest[..4].try_into().expect("digest truncated");
-
-        /*
-        println!("\n_deriveWithNumber {}, {}, {}, fingerprint:{}", 
-            child_number,
-            child_number.is_hardened(),
-            hex::encode(self.private_key.public_key().to_bytes()),
-            hex::encode(&fingerprint)
-        );
-        */
-
-        let depth = self.attrs.depth.checked_add(1).ok_or(Error::Depth)?;
-
-        let mut hmac =
-            HmacSha512::new_from_slice(&self.attrs.chain_code).map_err(|_| Error::Crypto)?;
-
-        if child_number.is_hardened() {
-            hmac.update(&[0]);
-            hmac.update(&self.private_key.to_bytes());
-            //println!("data: {}{}", hex::encode(self.private_key.to_bytes()), hex::encode(child_number.to_bytes()));
-        } else {
-            hmac.update(&self.private_key.public_key().to_bytes()[1..]);
-            //println!("data: {}{}", hex::encode(&self.private_key.public_key().to_bytes()[1..]), hex::encode(child_number.to_bytes()));
-        }
-
-        hmac.update(&child_number.to_bytes());
-
-        let result = hmac.finalize().into_bytes();
-        //println!("chainCode: {}", hex::encode(self.attrs.chain_code));
-        //println!("hash: {}", hex::encode(&result));
-
-        let (child_key, chain_code) = result.split_at(KEY_SIZE);
-
-        // We should technically loop here if a `secret_key` is zero or overflows
-        // the order of the underlying elliptic curve group, incrementing the
-        // index, however per "Child key derivation (CKD) functions":
-        // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#child-key-derivation-ckd-functions
-        //
-        // > "Note: this has probability lower than 1 in 2^127."
-        //
-        // ...so instead, we simply return an error if this were ever to happen,
-        // as the chances of it happening are vanishingly small.
-        let private_key = self.private_key.derive_child(child_key.try_into()?)?;
-
-        
+        let depth = bytes[4];
+        let parent_fingerprint = bytes[5..9].try_into()?;
+        let child_number = ChildNumber::from_bytes(bytes[9..13].try_into()?);
+        let chain_code = bytes[13..45].try_into()?;
+        let key_bytes = bytes[45..78].try_into()?;
+        bytes.zeroize();
 
         let attrs = ExtendedKeyAttrs {
-            parent_fingerprint: fingerprint,
-            child_number,
-            chain_code: chain_code.try_into()?,
             depth,
+            parent_fingerprint,
+            child_number,
+            chain_code,
         };
 
-        let derived = Self { private_key, attrs };
-
-        /*
-        derived.log(Prefix::XPRV);
-
-        println!("index:{}\nderived.childIndex:{}\nderived.xprivkey:{}",
-            child_number,
-            derived.attrs.child_number,
-            derived.to_string(Prefix::XPRV).as_str()
-        );
-
-        println!("==================\n");
-        */
-
-        Ok(derived)
-    }
-
-
-    /// Serialize the raw private key as a byte array.
-    pub fn to_bytes(&self) -> PrivateKeyBytes {
-        self.private_key().to_bytes().into()
-    }
-
-    /// Serialize this key as an [`ExtendedKey`].
-    pub fn to_extended_key(&self, prefix: Prefix) -> ExtendedKey {
-        // Add leading `0` byte
-        let mut key_bytes = [0u8; KEY_SIZE + 1];
-        key_bytes[1..].copy_from_slice(&self.to_bytes());
-
-        ExtendedKey {
+        Ok(ExtendedKey {
             prefix,
-            attrs: self.attrs.clone(),
+            attrs,
             key_bytes,
-        }
-    }
-
-    /// Serialize this key as a self-[`Zeroizing`] `String`.
-    pub fn to_string(&self, ) -> Zeroizing<String> {
-        let key = self.to_extended_key(Prefix::XPRV);
-        
-        //println!("str: {str}");
-        Zeroizing::new(key.to_string())
-    }
-
-    /*
-    pub fn log(&self, prefix: Prefix){
-        let key = self.to_extended_key(prefix);
-        let mut buf = [0u8; ExtendedKey::MAX_BASE58_SIZE];
-        let _str = write_base58(&key, &mut buf)
-            .map_err(|_| std::fmt::Error).unwrap();
-    }
-    */
-
-    
-    pub fn public_key(&self) -> ExtendedPublicKey<<SigningKey as PrivateKey>::PublicKey>{
-        self.into()
-    }
-
-    pub fn private_key(&self) -> &SigningKey{
-        &self.private_key
-    }
-    pub fn attrs(&self) -> &ExtendedKeyAttrs{
-        &self.attrs
+        })
     }
 }
 
-
-impl From<&HDWallet> for ExtendedPublicKey<<SigningKey as PrivateKey>::PublicKey>{
-    fn from(hd_wallet: &HDWallet) -> ExtendedPublicKey<<SigningKey as PrivateKey>::PublicKey> {
-        ExtendedPublicKey {
-            public_key: hd_wallet.private_key().public_key(),
-            attrs: hd_wallet.attrs().clone(),
-        }
+impl Drop for ExtendedKey {
+    fn drop(&mut self) {
+        self.key_bytes.zeroize();
     }
 }
 
-impl Debug for HDWallet{
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("HDWallet")
-            .field("depth", &self.attrs.depth)
-            .field("child_number", &self.attrs.child_number)
-            .field("chain_code", &hex::encode(&self.attrs.chain_code))
-            .field("private_key", &hex::encode(&self.to_bytes()))
-            .field("parent_fingerprint", &self.attrs.parent_fingerprint)
-            .finish()
+// TODO(tarcieri): consolidate test vectors
+#[cfg(all(test, feature = "alloc"))]
+mod tests {
+    use super::ExtendedKey;
+    use alloc::string::ToString;
+    use hex_literal::hex;
+
+    #[test]
+    fn bip32_test_vector_1_xprv() {
+        let xprv_base58 = "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPP\
+             qjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi";
+
+        let xprv = xprv_base58.parse::<ExtendedKey>().unwrap();
+        assert_eq!(xprv.prefix.as_str(), "xprv");
+        assert_eq!(xprv.attrs.depth, 0);
+        assert_eq!(xprv.attrs.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xprv.attrs.child_number.0, 0);
+        assert_eq!(
+            xprv.attrs.chain_code,
+            hex!("873DFF81C02F525623FD1FE5167EAC3A55A049DE3D314BB42EE227FFED37D508")
+        );
+        assert_eq!(
+            xprv.key_bytes,
+            hex!("00E8F32E723DECF4051AEFAC8E2C93C9C5B214313817CDB01A1494B917C8436B35")
+        );
+        assert_eq!(&xprv.to_string(), xprv_base58);
+    }
+
+    #[test]
+    fn bip32_test_vector_1_xpub() {
+        let xpub_base58 = "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhe\
+             PY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8";
+
+        let xpub = xpub_base58.parse::<ExtendedKey>().unwrap();
+        assert_eq!(xpub.prefix.as_str(), "xpub");
+        assert_eq!(xpub.attrs.depth, 0);
+        assert_eq!(xpub.attrs.parent_fingerprint, [0u8; 4]);
+        assert_eq!(xpub.attrs.child_number.0, 0);
+        assert_eq!(
+            xpub.attrs.chain_code,
+            hex!("873DFF81C02F525623FD1FE5167EAC3A55A049DE3D314BB42EE227FFED37D508")
+        );
+        assert_eq!(
+            xpub.key_bytes,
+            hex!("0339A36013301597DAEF41FBE593A02CC513D0B55527EC2DF1050E2E8FF49C85C2")
+        );
+        assert_eq!(&xpub.to_string(), xpub_base58);
     }
 }
-
-/*
-/// Write a Base58-encoded key to the provided buffer, returning a `&str`
-/// containing the serialized data.
-///
-/// Note that this type also impls [`Display`] and therefore you can
-/// obtain an owned string by calling `to_string()`.
-pub fn write_base58<'a>(key:&ExtendedKey, buffer: &'a mut [u8; ExtendedKey::MAX_BASE58_SIZE]) -> Result<&'a str> {
-    let mut bytes = [0u8; ExtendedKey::BYTE_SIZE]; // with 4-byte checksum
-    bytes[..4].copy_from_slice(&key.prefix.to_bytes());
-    bytes[4] = key.attrs.depth;
-    bytes[5..9].copy_from_slice(&key.attrs.parent_fingerprint);
-    bytes[9..13].copy_from_slice(&key.attrs.child_number.to_bytes());
-    bytes[13..45].copy_from_slice(&key.attrs.chain_code);
-    bytes[45..78].copy_from_slice(&key.key_bytes);
-    
-    println!("<Buffer {}>", hex::encode(key.prefix.to_bytes()));
-    println!("<Buffer {}>", hex::encode([key.attrs.depth]));
-    println!("<Buffer {}>", hex::encode(key.attrs.parent_fingerprint));
-    println!("<Buffer {}>", hex::encode(key.attrs.child_number.to_bytes()));
-    println!("<Buffer {}>", hex::encode(key.attrs.chain_code));
-    println!("<Buffer {}>", hex::encode(key.key_bytes));
-
-    println!("write_base58:{}", hex::encode(bytes));
-
-    let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
-    bytes.zeroize();
-
-    std::str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
-}
-*/
-
