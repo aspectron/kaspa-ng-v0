@@ -122,6 +122,9 @@ impl WalletView{
 
         let view = view::Html::try_new(Some(module), html!{
             <div class="wallet-view">
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
                 <div class="balance-badge">
                     <div class="balance">
                         <span class="label">{i18n("Available")}</span>

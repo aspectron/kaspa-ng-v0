@@ -248,3 +248,23 @@ workflow-app-layout{
     }
 }
 
+.progress-container{
+    width:100%;height:10px;
+    border:1px solid var(--flow-primary-color);
+    border-radius:2px;
+}
+.progress-bar{
+    height:100%;
+    width:10%;
+    background-color:var(--flow-primary-color);
+    animation-name: progressbar;
+    animation-duration:3s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+@keyframes progressbar{
+    0%{width:0%}
+    100%{width:100%}
+}
+
