@@ -19,6 +19,8 @@ pub type HmacSha512 = hmac::Hmac<sha2::Sha512>;
 
 use crate::AddressType;
 use crate::xpub::ExtendedPublicKey;
+use workflow_core::task::*;
+use std::time::Duration;
 
 
 #[derive(Clone)]
@@ -60,6 +62,8 @@ impl HDWallet{
             );
             */
             key = key.derive_child(c.clone()).await?;
+            sleep(Duration::from_secs(0)).await;
+
         }
 
         let pubkey = &key.public_key().to_bytes()[1..];
