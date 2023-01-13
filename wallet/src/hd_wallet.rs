@@ -5,7 +5,7 @@ use std::fmt::Debug;
 use std::str::FromStr;
 use hmac::Mac;
 use addresses::{Address, Prefix as AddressPrefix};
-use secp256k1_ffi::SECP256K1;
+//use secp256k1_ffi::SECP256K1;
 
 //use workflow_core::task::*;
 //use std::time::Duration;
@@ -14,6 +14,7 @@ use crate::{
     ExtendedKeyAttrs,
     private_key::{PrivateKey, SecretKey},
     PublicKey,
+    SecretKey2PublicKey,
     ChildNumber,
     ExtendedPublicKey,
     ExtendedPrivateKey,
@@ -61,8 +62,8 @@ impl HDWalletInner{
         };
         */
 
-        //let pubkey = &private_key.public_key(&SECP256K1).to_bytes()[1..];
-        let pubkey = &private_key.public_key().to_bytes()[1..];
+        let pubkey = &private_key.get_public_key().to_bytes()[1..];
+        //let pubkey = &private_key.public_key().to_bytes()[1..];
         let address = Address{
             prefix: AddressPrefix::Mainnet,
             version: 0,
@@ -90,8 +91,8 @@ impl HDWalletInner{
 impl From<&HDWalletInner> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>{
     fn from(inner: &HDWalletInner) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
         ExtendedPublicKey {
-            //public_key: inner.private_key().public_key(&SECP256K1),
-            public_key: inner.private_key().public_key(),
+            public_key: inner.private_key().get_public_key(),
+            //public_key: inner.private_key().public_key(),
             attrs: inner.attrs().clone(),
         }
     }
@@ -200,18 +201,21 @@ impl HDWallet{
         child_number: ChildNumber
     ) -> Result<(SecretKey, ExtendedKeyAttrs)> {
 
-        //let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key(&SECP256K1).to_bytes()[1..]));
-        let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key().to_bytes()[1..]));
+        let digest = Ripemd160::digest(&Sha256::digest(&private_key.get_public_key().to_bytes()[1..]));
+        //let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key().to_bytes()[1..]));
         let fingerprint = digest[..4].try_into().expect("digest truncated");
 
         /*
+        println!("\n private_key: {}", hex::encode(private_key.to_bytes()));
+        
         println!("\n_deriveWithNumber {}, {}, {}, fingerprint:{}", 
             child_number,
             child_number.is_hardened(),
-            hex::encode(self.private_key.public_key().to_bytes()),
+            hex::encode(private_key.get_public_key().to_bytes()),
             hex::encode(&fingerprint)
         );
         */
+        
 
         let depth = attrs.depth.checked_add(1).ok_or(Error::Depth)?;
 
@@ -223,8 +227,8 @@ impl HDWallet{
             hmac.update(&private_key.to_bytes());
             //println!("data: {}{}", hex::encode(self.private_key.to_bytes()), hex::encode(child_number.to_bytes()));
         } else {
-            //hmac.update(&private_key.public_key(&SECP256K1).to_bytes()[1..]);
-            hmac.update(&private_key.public_key().to_bytes()[1..]);
+            hmac.update(&private_key.get_public_key().to_bytes()[1..]);
+            //hmac.update(&private_key.public_key().to_bytes()[1..]);
             //println!("data: {}{}", hex::encode(&self.private_key.public_key().to_bytes()[1..]), hex::encode(child_number.to_bytes()));
         }
 
@@ -246,8 +250,6 @@ impl HDWallet{
         // ...so instead, we simply return an error if this were ever to happen,
         // as the chances of it happening are vanishingly small.
         let private_key = private_key.derive_child(child_key.try_into()?)?;
-
-        
 
         let attrs = ExtendedKeyAttrs {
             parent_fingerprint: fingerprint,
@@ -326,8 +328,8 @@ impl HDWallet{
 impl From<&HDWallet> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>{
     fn from(hd_wallet: &HDWallet) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
         ExtendedPublicKey {
-            //public_key: hd_wallet.private_key().public_key(&SECP256K1),
-            public_key: hd_wallet.private_key().public_key(),
+            public_key: hd_wallet.private_key().get_public_key(),
+            //public_key: hd_wallet.private_key().public_key(),
             attrs: hd_wallet.attrs().clone(),
         }
     }

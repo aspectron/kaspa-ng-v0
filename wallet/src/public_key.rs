@@ -4,7 +4,7 @@ use ripemd::{Digest, Ripemd160};
 use sha2::Sha256;
 use secp256k1_ffi::{
     Secp256k1, VerifyOnly,
-    //scalar::Scalar
+    scalar::Scalar
 };
 
 /// Trait for key types which can be derived using BIP32.
@@ -39,12 +39,12 @@ impl PublicKey for secp256k1_ffi::PublicKey {
     fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
         let engine = Secp256k1::<VerifyOnly>::verification_only();
 
-        //let other = Scalar::from_le_bytes(other)?;
+        let other = Scalar::from_be_bytes(other)?;
 
-        let mut child_key = *self;
+        let child_key = *self;
         child_key
-            //.add_exp_tweak(&engine, &other)
-            .add_exp_assign(&engine, &other)
+            .add_exp_tweak(&engine, &other)
+            //.add_exp_assign(&engine, &other)
             .map_err(|_| Error::Crypto)?;
 
         Ok(child_key)

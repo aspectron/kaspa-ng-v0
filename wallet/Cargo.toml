@@ -23,9 +23,9 @@ version = "0.12"
 default-features = false
 
 [dependencies.secp256k1-ffi]
-version = "0.21"
+version = "0.24"
 package = "secp256k1"
-features=["global-context"]#, "rand-std"]
+features=["global-context", "rand-std"]
 
 [dependencies.sha2]
 version = "0.10"
@@ -46,3 +46,6 @@ default-features = false
 [dependencies.js-sys]
 version="*"
 
+#[dependencies.async-std]
+#version = "1.12.0"
+#features = ["attributes"]

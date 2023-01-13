@@ -1,4 +1,4 @@
-use secp256k1_ffi::{Secp256k1, SignOnly};//, scalar::Scalar};
+use secp256k1_ffi::{Secp256k1, SignOnly, scalar::Scalar};
 pub use secp256k1_ffi::SecretKey;
 use crate::types::*;
 use crate::Result;
@@ -35,10 +35,10 @@ impl PrivateKey for SecretKey {
     }
 
     fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
-        let mut child = *self;
-        //let other = Scalar::from_le_bytes(other)?;
-        //child.add_tweak(&other)?;
-        child.add_assign(&other)?;
+        let child = *self;
+        let other = Scalar::from_be_bytes(other)?;
+        let child = child.add_tweak(&other)?;
+        //child.add_assign(&other)?;
         Ok(child)
     }
 

@@ -30,8 +30,8 @@ pub enum Error {
     /// Seed length invalid.
     SeedLength,
 
-    //// Scalar OutOfRangeError
-    //ScalarOutOfRangeError
+    /// Scalar OutOfRangeError
+    ScalarOutOfRangeError
 }
 
 impl Display for Error {
@@ -44,7 +44,7 @@ impl Display for Error {
             Error::Decode => f.write_str("decoding error"),
             Error::Depth => f.write_str("maximum derivation depth exceeded"),
             Error::SeedLength => f.write_str("seed length invalid"),
-            //Error::ScalarOutOfRangeError => f.write_str("scalar bytes length invalid"),
+            Error::ScalarOutOfRangeError => f.write_str("scalar bytes length invalid"),
         }
     }
 }
@@ -83,10 +83,9 @@ impl From<secp256k1_ffi::Error> for Error {
     }
 }
 
-/*
+
 impl From<secp256k1_ffi::scalar::OutOfRangeError> for Error {
     fn from(_: secp256k1_ffi::scalar::OutOfRangeError) -> Error {
         Error::ScalarOutOfRangeError
     }
 }
-*/

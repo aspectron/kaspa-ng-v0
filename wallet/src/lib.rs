@@ -33,6 +33,15 @@ pub use types::*;
 pub use address_type::AddressType;
 pub use hd_wallet::HDWallet;
 
+pub trait SecretKey2PublicKey{
+    fn get_public_key(&self)->secp256k1_ffi::PublicKey;
+}
+
+impl SecretKey2PublicKey for secp256k1_ffi::SecretKey{
+    fn get_public_key(&self)->secp256k1_ffi::PublicKey {
+        secp256k1_ffi::PublicKey::from_secret_key_global(self)
+    }
+}
 
 #[wasm_bindgen]
 extern "C" {
@@ -47,7 +56,7 @@ pub async fn yield_now(){
 
 
 pub async fn yield_now1(){
-    sleep(Duration::from_secs(1)).await;
+   sleep(Duration::from_secs(1)).await;
 }
 
 
@@ -81,7 +90,7 @@ async fn test()->Result<()>{
 
     let mut receive_addresses : Vec<String>= Vec::new();
     let mut change_addresses : Vec<String>= Vec::new();
-    for index in 0..500{
+    for index in 0..5000{
         let address = hd_wallet.derive_receive_address(index).await?;
         receive_addresses.push(address.into());
         //yield_now().await;
@@ -138,8 +147,9 @@ async fn test()->Result<()>{
 }
 
 /*
-fn main() {
-    let result = test();
+#[async_std::main]
+async fn main() {
+    let result = test().await;
     println!("result: {:?}", result);
 }
 */
@@ -154,3 +164,4 @@ pub async fn test_addresses(){
         log_trace!("result: {:?}", result);
     //});
 }
+
