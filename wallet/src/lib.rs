@@ -52,7 +52,6 @@ extern "C" {
     fn request_animation_frame(callback:js_sys::Function);
 }
 
-
 pub async fn yield_now(){
     let promise = js_sys::Promise::new(&mut |res, _|{
         request_animation_frame(res);
@@ -60,13 +59,21 @@ pub async fn yield_now(){
     let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
 }
 
-
 pub async fn yield_now1(){
    sleep(Duration::from_secs(1)).await;
 }
 
+fn init_yield(){
+    let _ = js_sys::Function::new_no_args("
+        if (!this.requestAnimationFrame){
+            this.requestAnimationFrame = cb=>setImmediate(cb)
+        }
+    ")
+    .call0(&JsValue::undefined());
+}
 
 async fn test()->Result<()>{
+    init_yield();
 
     // Generate random Mnemonic using the default language (English)
     //let mnemonic = Mnemonic::random(&mut OsRng, Default::default());
@@ -102,7 +109,7 @@ async fn test()->Result<()>{
         //yield_now().await;
         let address = hd_wallet.derive_change_address(index).await?;
         change_addresses.push(address.into());
-        if index % 2 == 0{
+        if index % 3 == 0{
             yield_now().await;
         }
         
