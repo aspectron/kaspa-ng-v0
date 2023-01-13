@@ -9,7 +9,6 @@ workflow-log = {path="../../workflow-log", features=[]}
 workflow-core = {path="../../workflow-core" }
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.29"
-bip32 = {version = "0.4.0", default-features=false, features=["secp256k1-ffi", "alloc"]}
 hex = "*"
 addresses = {path="../../rusty-kaspa/crypto/addresses"}
 
@@ -34,6 +33,7 @@ default-features = false
 [dependencies.zeroize]
 version = "1"
 default-features = false
+features=["alloc"]
 
 [dependencies.ripemd]
 version = "0.1"
