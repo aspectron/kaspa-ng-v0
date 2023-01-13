@@ -66,7 +66,10 @@ pub async fn yield_now1(){
 fn init_yield(){
     let _ = js_sys::Function::new_no_args("
         if (!this.requestAnimationFrame){
-            this.requestAnimationFrame = cb=>setImmediate(cb)
+            if (this.setImmediate)
+                this.requestAnimationFrame = cb=>setImmediate(cb)
+            else
+                this.requestAnimationFrame = cb=>setTimeout(cb, 0)
         }
     ")
     .call0(&JsValue::undefined());
