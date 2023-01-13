@@ -21,7 +21,7 @@ use crate::{
     ExtendedKey,
     AddressType,
     Prefix,
-    //yield_now
+    yield_now
 };
 
 

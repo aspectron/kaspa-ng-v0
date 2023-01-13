@@ -45,13 +45,19 @@ impl SecretKey2PublicKey for secp256k1_ffi::SecretKey{
 
 #[wasm_bindgen]
 extern "C" {
-    #[wasm_bindgen(js_name = yield_now)]
-    fn yield_now_impl()->js_sys::Promise;
+    //#[wasm_bindgen(js_name = yield_now)]
+    //fn yield_now_impl()->js_sys::Promise;
+
+    #[wasm_bindgen(js_name = requestAnimationFrame)]
+    fn request_animation_frame(callback:js_sys::Function);
 }
 
 
 pub async fn yield_now(){
-    let _ = wasm_bindgen_futures::JsFuture::from(yield_now_impl()).await;
+    let promise = js_sys::Promise::new(&mut |res, _|{
+        request_animation_frame(res);
+    });
+    let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
 }
 
 
@@ -96,7 +102,7 @@ async fn test()->Result<()>{
         //yield_now().await;
         let address = hd_wallet.derive_change_address(index).await?;
         change_addresses.push(address.into());
-        if index % 3 == 0{
+        if index % 2 == 0{
             yield_now().await;
         }
         

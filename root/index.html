@@ -70,8 +70,8 @@
 			//console.log("yield_now in js0")
 			return new Promise((resolve)=>{
 				//console.log("yield_now in js1")
-				//requestAnimationFrame(resolve);
-				requestIdleCallback(resolve)
+				requestAnimationFrame(resolve);
+				//requestIdleCallback(resolve, { timeout : 0 })
 				//list.push(resolve);
 				//node.textContent = count++;
 				//resolve();
