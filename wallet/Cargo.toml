@@ -8,7 +8,7 @@ rand_core= { version = "0.6", features = ["std"] }
 workflow-log = {path="../../workflow-log", features=[]}
 workflow-core = {path="../../workflow-core" }
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
-wasm-bindgen-futures = "0.4.29"
+wasm-bindgen-futures = "0.4.33"
 hex = "*"
 addresses = {path="../../rusty-kaspa/crypto/addresses"}
 
