@@ -157,7 +157,7 @@ impl WalletView{
                             let _ = this.clone().subscribe();
                         //}
                     }>{i18n("Subscribe")}</flow-btn>
-                    <flow-btn primary="true"!click={
+                    <flow-btn primary="true" !click={
                         if let Some(c) = this2.clone().upgrade(){
                             let _ = c.unsubscribe();
                         }

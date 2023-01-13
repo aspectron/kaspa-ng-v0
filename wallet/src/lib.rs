@@ -109,7 +109,7 @@ async fn test()->Result<()>{
     for index in 0..5000{
         receive_addresses.push(hd_wallet.derive_receive_address(index).await?.into());
         change_addresses.push(hd_wallet.derive_change_address(index).await?.into());
-        if index % 7 == 0{
+        if index % 10 == 0{
             yield_now().await;
         }
         
