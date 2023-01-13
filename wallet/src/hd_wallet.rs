@@ -21,7 +21,7 @@ use crate::{
     ExtendedKey,
     AddressType,
     Prefix,
-    yield_now
+    //yield_now
 };
 
 
@@ -53,7 +53,7 @@ impl HDWalletInner{
             child_number
         ).await?;
         //sleep(Duration::from_secs(0)).await;
-        yield_now().await;
+        //yield_now().await;
         
         /*
         let key = ExtendedPublicKey {

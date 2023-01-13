@@ -96,7 +96,10 @@ async fn test()->Result<()>{
         //yield_now().await;
         let address = hd_wallet.derive_change_address(index).await?;
         change_addresses.push(address.into());
-        //yield_now().await;
+        if index % 3 == 0{
+            yield_now().await;
+        }
+        
         if index % 50 == 0{
             log_trace!("generating {}", index);
         }
