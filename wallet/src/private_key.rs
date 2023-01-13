@@ -35,11 +35,7 @@ impl PrivateKey for SecretKey {
     }
 
     fn derive_child(&self, other: PrivateKeyBytes) -> Result<Self> {
-        let child = *self;
-        let other = Scalar::from_be_bytes(other)?;
-        let child = child.add_tweak(&other)?;
-        //child.add_assign(&other)?;
-        Ok(child)
+        Ok((*self).add_tweak(&Scalar::from_be_bytes(other)?)?)
     }
 
     fn public_key(&self) -> Self::PublicKey {

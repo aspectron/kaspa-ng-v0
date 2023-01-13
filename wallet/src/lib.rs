@@ -107,16 +107,13 @@ async fn test()->Result<()>{
     let mut receive_addresses : Vec<String>= Vec::new();
     let mut change_addresses : Vec<String>= Vec::new();
     for index in 0..5000{
-        let address = hd_wallet.derive_receive_address(index).await?;
-        receive_addresses.push(address.into());
-        //yield_now().await;
-        let address = hd_wallet.derive_change_address(index).await?;
-        change_addresses.push(address.into());
-        if index % 3 == 0{
+        receive_addresses.push(hd_wallet.derive_receive_address(index).await?.into());
+        change_addresses.push(hd_wallet.derive_change_address(index).await?.into());
+        if index % 7 == 0{
             yield_now().await;
         }
         
-        if index % 50 == 0{
+        if index % 200 == 0{
             log_trace!("generating {}", index);
         }
         //sleep(Duration::from_secs(1)).await;
@@ -124,11 +121,15 @@ async fn test()->Result<()>{
 
     log_trace!("Receive addresses:");
     for (index, address)in receive_addresses.iter().enumerate(){
-        log_trace!("#{index}: {}", address);
+        if index % 100 == 0{
+            log_trace!("#{index}: {}", address);
+        }
     }
     log_trace!("Change addresses:");
     for (index, address)in change_addresses.iter().enumerate(){
-        log_trace!("#{index}: {}", address);
+        if index % 100 == 0{
+            log_trace!("#{index}: {}", address);
+        }
     }
 
     

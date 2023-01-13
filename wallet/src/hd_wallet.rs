@@ -31,12 +31,17 @@ pub struct HDWalletInner {
     private_key: SecretKey,
 
     /// Extended key attributes.
-    attrs: ExtendedKeyAttrs
+    attrs: ExtendedKeyAttrs,
+
+    #[allow(dead_code)]
+    fingerprint: [u8; 4],
+
+    hmac: HmacSha512
 }
 
 impl HDWalletInner{
     pub async fn derive_address(&self, index: u32)->Result<Address>{
-        let child_number = ChildNumber::new(index, true)?;
+        //let child_number = ChildNumber::new(index, true)?;
         //key = key.derive_child(c.clone())?;
         //println!("\nc:    {c:?}");
         //println!("key: {:#?}", key2);
@@ -47,11 +52,21 @@ impl HDWalletInner{
         );
         */
         //key = key.derive_child(child_number).await?;
-        let (private_key, _attrs) = HDWallet::derive_child(
+        /*
+        let (private_key, _attrs) = HDWallet::derive_child_with_fingerprint(
             &self.private_key,
             &self.attrs,
-            child_number
+            child_number,
+            self.fingerprint,
+            self.hmac.clone()
         ).await?;
+        */
+
+        let (private_key, _) = HDWallet::derive_private_key(
+            &self.private_key,
+            ChildNumber::new(index, true)?,
+            self.hmac.clone()
+        )?;
         //sleep(Duration::from_secs(0)).await;
         //yield_now().await;
         
@@ -189,9 +204,23 @@ impl HDWallet{
             //yield_now().await
         }
 
+        let public_key_bytes = &private_key.get_public_key().to_bytes()[1..];
+
+        let digest = Ripemd160::digest(&Sha256::digest(public_key_bytes));
+        //let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key().to_bytes()[1..]));
+        let fingerprint = digest[..4].try_into().expect("digest truncated");
+
+        let hmac = Self::create_hmac(
+            &private_key,
+            &attrs,
+            true
+        )?;
+
         Ok(HDWalletInner{
             private_key,
-            attrs
+            attrs,
+            fingerprint,
+            hmac
         })
     }
     
@@ -201,10 +230,96 @@ impl HDWallet{
         child_number: ChildNumber
     ) -> Result<(SecretKey, ExtendedKeyAttrs)> {
 
-        let digest = Ripemd160::digest(&Sha256::digest(&private_key.get_public_key().to_bytes()[1..]));
+        let public_key_bytes = &private_key.get_public_key().to_bytes()[1..];
+
+        let digest = Ripemd160::digest(&Sha256::digest(public_key_bytes));
         //let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key().to_bytes()[1..]));
         let fingerprint = digest[..4].try_into().expect("digest truncated");
 
+
+        let hmac = Self::create_hmac(
+            private_key,
+            attrs,
+            child_number.is_hardened()
+        )?;
+    
+        let res = Self::derive_child_with_fingerprint(
+            private_key,
+            attrs,
+            child_number,
+            fingerprint,
+            hmac
+        ).await?;
+
+        Ok(res)
+    }
+
+    pub fn create_hmac(
+        private_key: &SecretKey,
+        attrs: &ExtendedKeyAttrs,
+        hardened: bool,
+    )->Result<HmacSha512>{
+        let mut hmac =
+            HmacSha512::new_from_slice(&attrs.chain_code).map_err(|_| Error::Crypto)?;
+        if hardened {
+            hmac.update(&[0]);
+            hmac.update(&private_key.to_bytes());
+            //println!("data: {}{}", hex::encode(self.private_key.to_bytes()), hex::encode(child_number.to_bytes()));
+        } else {
+            let public_key_bytes = &private_key.get_public_key().to_bytes()[1..];
+            hmac.update(public_key_bytes);
+            //hmac.update(&private_key.public_key().to_bytes()[1..]);
+            //println!("data: {}{}", hex::encode(&self.private_key.public_key().to_bytes()[1..]), hex::encode(child_number.to_bytes()));
+        }
+
+        Ok(hmac)
+    }
+
+    pub async fn derive_child_with_fingerprint(
+        private_key: &SecretKey, 
+        attrs: &ExtendedKeyAttrs,
+        child_number: ChildNumber,
+        fingerprint: [u8; 4],
+        hmac: HmacSha512
+    ) -> Result<(SecretKey, ExtendedKeyAttrs)> {
+        
+        let (private_key, chain_code) = Self::derive_private_key(
+            private_key,
+            child_number,
+            hmac
+        )?;
+    
+        let depth = attrs.depth.checked_add(1).ok_or(Error::Depth)?;
+    
+        let attrs = ExtendedKeyAttrs {
+            parent_fingerprint: fingerprint,
+            child_number,
+            chain_code,
+            depth,
+        };
+
+        let derived = (private_key, attrs);
+
+        /*
+        derived.log(Prefix::XPRV);
+
+        println!("index:{}\nderived.childIndex:{}\nderived.xprivkey:{}",
+            child_number,
+            derived.attrs.child_number,
+            derived.to_string(Prefix::XPRV).as_str()
+        );
+
+        println!("==================\n");
+        */
+
+        Ok(derived)
+    }
+
+    pub fn derive_private_key<'a>(
+        private_key: &SecretKey,
+        child_number: ChildNumber,
+        mut hmac: HmacSha512
+    )->Result<(SecretKey, ChainCode)>{
         /*
         println!("\n private_key: {}", hex::encode(private_key.to_bytes()));
         
@@ -215,22 +330,6 @@ impl HDWallet{
             hex::encode(&fingerprint)
         );
         */
-        
-
-        let depth = attrs.depth.checked_add(1).ok_or(Error::Depth)?;
-
-        let mut hmac =
-            HmacSha512::new_from_slice(&attrs.chain_code).map_err(|_| Error::Crypto)?;
-
-        if child_number.is_hardened() {
-            hmac.update(&[0]);
-            hmac.update(&private_key.to_bytes());
-            //println!("data: {}{}", hex::encode(self.private_key.to_bytes()), hex::encode(child_number.to_bytes()));
-        } else {
-            hmac.update(&private_key.get_public_key().to_bytes()[1..]);
-            //hmac.update(&private_key.public_key().to_bytes()[1..]);
-            //println!("data: {}{}", hex::encode(&self.private_key.public_key().to_bytes()[1..]), hex::encode(child_number.to_bytes()));
-        }
 
         hmac.update(&child_number.to_bytes());
 
@@ -251,28 +350,7 @@ impl HDWallet{
         // as the chances of it happening are vanishingly small.
         let private_key = private_key.derive_child(child_key.try_into()?)?;
 
-        let attrs = ExtendedKeyAttrs {
-            parent_fingerprint: fingerprint,
-            child_number,
-            chain_code: chain_code.try_into()?,
-            depth,
-        };
-
-        let derived = (private_key, attrs);
-
-        /*
-        derived.log(Prefix::XPRV);
-
-        println!("index:{}\nderived.childIndex:{}\nderived.xprivkey:{}",
-            child_number,
-            derived.attrs.child_number,
-            derived.to_string(Prefix::XPRV).as_str()
-        );
-
-        println!("==================\n");
-        */
-
-        Ok(derived)
+        Ok((private_key, chain_code.try_into()?))
     }
 
 
