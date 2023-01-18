@@ -2,6 +2,7 @@ pub enum AddressType{
     Receive = 0,
     Change
 }
+
 impl ToString for AddressType{
     fn to_string(&self) -> String {
         match self {

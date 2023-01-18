@@ -45,8 +45,11 @@ impl ExtendedKey {
         bytes[13..45].copy_from_slice(&self.attrs.chain_code);
         bytes[45..78].copy_from_slice(&self.key_bytes);
 
+        //println!("serialized {}", hex::encode(&bytes));
         let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
         bytes.zeroize();
+
+        //println!("base58_len: {base58_len}, hash {}", hex::encode(&buffer));
 
         str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
     }
@@ -107,7 +110,7 @@ impl Drop for ExtendedKey {
 }
 
 // TODO(tarcieri): consolidate test vectors
-#[cfg(all(test, feature = "alloc"))]
+#[cfg(all(test, feature = "alloc_"))]
 mod tests {
     use super::ExtendedKey;
     use alloc::string::ToString;

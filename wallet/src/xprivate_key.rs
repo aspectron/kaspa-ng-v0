@@ -56,6 +56,7 @@ where
         hmac.update(seed.as_ref());
 
         let result = hmac.finalize().into_bytes();
+        //println!("seed hash {}", hex::encode(result));
         let (secret_key, chain_code) = result.split_at(KEY_SIZE);
         let private_key = PrivateKey::from_bytes(secret_key.try_into()?)?;
         let attrs = ExtendedKeyAttrs {
@@ -204,7 +205,8 @@ where
     type Err = Error;
 
     fn from_str(xprv: &str) -> Result<Self> {
-        ExtendedKey::from_str(xprv)?.try_into()
+        let key = ExtendedKey::from_str(xprv)?;
+        key.try_into()
     }
 }
 

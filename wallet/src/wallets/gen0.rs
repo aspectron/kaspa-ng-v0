@@ -14,7 +14,7 @@ use crate::{
     ExtendedKeyAttrs,
     private_key::{PrivateKey, SecretKey},
     PublicKey,
-    SecretKey2PublicKey,
+    SecretKeyExt,
     ChildNumber,
     ExtendedPublicKey,
     ExtendedPrivateKey,
@@ -53,7 +53,7 @@ impl HDWalletInner{
         */
         //key = key.derive_child(child_number).await?;
         /*
-        let (private_key, _attrs) = HDWallet::derive_child_with_fingerprint(
+        let (private_key, _attrs) = HDWalletGen0::derive_child_with_fingerprint(
             &self.private_key,
             &self.attrs,
             child_number,
@@ -62,7 +62,7 @@ impl HDWalletInner{
         ).await?;
         */
 
-        let (private_key, _) = HDWallet::derive_private_key(
+        let (private_key, _) = HDWalletGen0::derive_private_key(
             &self.private_key,
             ChildNumber::new(index, true)?,
             self.hmac.clone()
@@ -115,7 +115,7 @@ impl From<&HDWalletInner> for ExtendedPublicKey<<SecretKey as PrivateKey>::Publi
 
 
 #[derive(Clone)]
-pub struct HDWallet {
+pub struct HDWalletGen0 {
     /// Derived private key
     private_key: SecretKey,
 
@@ -126,7 +126,7 @@ pub struct HDWallet {
     change_wallet: HDWalletInner
 }
 
-impl HDWallet{
+impl HDWalletGen0{
 
     pub async fn from_str(xpriv: &str)->Result<Self>{
 
@@ -403,8 +403,8 @@ impl HDWallet{
 }
 
 
-impl From<&HDWallet> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>{
-    fn from(hd_wallet: &HDWallet) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
+impl From<&HDWalletGen0> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>{
+    fn from(hd_wallet: &HDWalletGen0) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
         ExtendedPublicKey {
             public_key: hd_wallet.private_key().get_public_key(),
             //public_key: hd_wallet.private_key().public_key(),
@@ -413,7 +413,7 @@ impl From<&HDWallet> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>
     }
 }
 
-impl Debug for HDWallet{
+impl Debug for HDWalletGen0{
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("HDWallet")
             .field("depth", &self.attrs.depth)

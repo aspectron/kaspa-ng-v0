@@ -101,8 +101,9 @@ where
         }
     }
 
-    pub fn to_string(&self) -> String {
-        self.to_extended_key(Prefix::XPUB).to_string()
+    pub fn to_string(&self, prefix: Option<Prefix>) -> String {
+        let prefix = prefix.unwrap_or(Prefix::XPUB);
+        self.to_extended_key(prefix).to_string()
     }
 }
 

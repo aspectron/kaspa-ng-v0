@@ -25,6 +25,12 @@ impl Prefix {
     /// Length of a prefix in ASCII characters.
     pub const LENGTH: usize = 4;
 
+    /// `kprv` prefix
+    pub const KPRV: Self = Self::from_parts_unchecked("kprv", 0x038f2ef4);
+
+    /// `kpub` prefix
+    pub const KPUB: Self = Self::from_parts_unchecked("kpub", 0x038f332e);
+
     /// `tprv` prefix
     pub const TPRV: Self = Self::from_parts_unchecked("tprv", 0x04358394);
 

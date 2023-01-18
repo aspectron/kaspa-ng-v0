@@ -11,6 +11,7 @@ wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.33"
 hex = "*"
 addresses = {path="../../rusty-kaspa/crypto/addresses"}
+bip32 = "0.4.0"
 
 [dependencies.bs58]
 version = "0.4"
@@ -49,3 +50,19 @@ version="*"
 #[dependencies.async-std]
 #version = "1.12.0"
 #features = ["attributes"]
+
+[dependencies.tokio]
+version="*"
+
+[dependencies.once_cell]
+version = "1"
+
+[dependencies.pbkdf2]
+version = "0.11"
+#optional = true
+default-features = false
+
+#[features]
+#alloc = ["zeroize/alloc"]
+#default = ["alloc"]
+#std = ["alloc"]

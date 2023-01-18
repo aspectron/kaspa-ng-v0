@@ -1,8 +1,10 @@
 
+extern crate alloc;
 // use std::time::Duration;
 use wasm_bindgen::prelude::*;
 use workflow_log::log_trace;
 use workflow_core::task::*;
+use zeroize::Zeroizing;
 
 //use bip32;
 
@@ -16,10 +18,11 @@ mod address_type;
 mod types;
 mod error;
 mod result;
-mod hd_wallet;
+mod wallets;
 mod attrs;
 mod child_number;
 mod prefix;
+mod mnemonic;
 
 pub use xprivate_key::ExtendedPrivateKey;
 pub use xpublic_key::ExtendedPublicKey;
@@ -31,61 +34,101 @@ pub use prefix::Prefix;
 pub use child_number::ChildNumber;
 pub use types::*;
 pub use address_type::AddressType;
-pub use hd_wallet::HDWallet;
+pub use wallets::HDWalletGen0;
+pub use wallets::HDWalletGen1;
+pub use addresses::{Address, Prefix as AddressPrefix};
+pub use mnemonic::{
+    Mnemonic,
+    Language
+};
 
-pub trait SecretKey2PublicKey{
+
+pub trait SecretKeyExt{
     fn get_public_key(&self)->secp256k1_ffi::PublicKey;
+    fn as_str(&self, attrs: ExtendedKeyAttrs, prefix: Prefix)->Zeroizing<String>;
 }
 
-impl SecretKey2PublicKey for secp256k1_ffi::SecretKey{
+impl SecretKeyExt for secp256k1_ffi::SecretKey{
     fn get_public_key(&self)->secp256k1_ffi::PublicKey {
         secp256k1_ffi::PublicKey::from_secret_key_global(self)
     }
+    fn as_str(&self, attrs:ExtendedKeyAttrs, prefix: Prefix)->Zeroizing<String>{
+        // Add leading `0` byte
+        let mut key_bytes = [0u8; KEY_SIZE + 1];
+        key_bytes[1..].copy_from_slice(&self.to_bytes());
+
+        let key = ExtendedKey {
+            prefix,
+            attrs,
+            key_bytes,
+        };
+
+        Zeroizing::new(key.to_string())
+    }
 }
 
-// #[wasm_bindgen]
-// extern "C" {
-//     //#[wasm_bindgen(js_name = yield_now)]
-//     //fn yield_now_impl()->js_sys::Promise;
-
-//     #[wasm_bindgen(js_name = requestAnimationFrame)]
-//     fn request_animation_frame(callback:js_sys::Function);
-// }
-
-// pub async fn yield_now(){
-//     let promise = js_sys::Promise::new(&mut |res, _|{
-//         request_animation_frame(res);
-//     });
-//     let _ = wasm_bindgen_futures::JsFuture::from(promise).await;
-// }
-
-// pub async fn yield_now1(){
-//    sleep(Duration::from_secs(1)).await;
-// }
-
-// fn init_yield(){
-//     let _ = js_sys::Function::new_no_args("
-//         if (!this.requestAnimationFrame){
-//             if (this.setImmediate)
-//                 this.requestAnimationFrame = cb=>setImmediate(cb)
-//             else
-//                 this.requestAnimationFrame = cb=>setTimeout(cb, 0)
-//         }
-//     ")
-//     .call0(&JsValue::undefined());
-// }
-
-async fn test()->Result<()>{
+async fn test(_use_yield:bool)->Result<()>{
     // init_yield();
 
-    return Ok(());
+    //return Ok(());
 
     // Generate random Mnemonic using the default language (English)
     //let mnemonic = Mnemonic::random(&mut OsRng, Default::default());
 
-    // Derive a BIP39 seed value using the given password
-    //let seed = mnemonic.to_seed("password");
+    let mnemonic = Mnemonic::new(
+        "foster view oak response abuse sister oyster vapor mind host helmet purpose cram daring average warfare ring shoe scare bag arrest over scorpion lab",
+        Language::English
+    )?;
 
+    // Derive a BIP39 seed value using the given password
+    let seed = mnemonic.to_seed("");
+
+    //println!("seed: {}", hex::encode(seed.as_bytes()));
+
+    let xprv = ExtendedPrivateKey::<secp256k1_ffi::SecretKey>::new(seed)?;
+
+    //println!("private_key: {}", hex::encode(xprv.private_key().to_bytes()));
+    let xpriv_str = xprv.to_string(Prefix::KPRV);
+    let xpriv_str = xpriv_str.as_str();
+
+    //println!("xpriv: {}", xpriv_str);
+    
+    //println!("xpriv should be : kprv5y2qurMHCsXYrNfU3GCihuwG3vMqFji7PZXajMEqyBkNh9UZUJgoHYBLTKu1eM4MvUtomcXPQ3Sw9HZ5ebbM4byoUciHo1zrPJBQfqpLorQ");
+    //println!("xpub : {}", xprv.public_key().to_string(Some(Prefix::KPUB)));
+    //println!("xpub should be : kpub2Hv8W2rbSwaLD6XJt93SSEe6WPaoHyrH684QMpm5pKdQTY1CDvQoiPuXvCCfXFBKjHZXLQPDASuB3JREdS1GVKLV1P2AB2TiXRPAKXgjwFX");
+    /*
+    let address_path = format!("44'/111111'/0'/0/{}", 1);
+    let children = address_path.split("/");
+    for child in children{
+        let c = child.parse::<ChildNumber>()?;
+        //key = key.derive_child(c.clone())?;
+        //println!("\nc:    {c:?}");
+        //println!("key: {:#?}", key2);
+        xprv = xprv.derive_child(c)?;
+
+        println!("\nkey: {:?}\npub: {}\nc: {c:?}",
+            //key.to_string(Prefix::XPRV).as_str(),
+            xprv.to_string(Prefix::KPRV).as_str(),
+            xprv.public_key().to_string(Some(Prefix::KPUB))
+        );
+        //sleep(Duration::from_secs(0)).await;
+        //yield_now().await
+    }
+
+    let pubkey = &xprv.private_key().get_public_key().to_bytes()[1..];
+    //let pubkey = &private_key.public_key().to_bytes()[1..];
+    let address = Address{
+        prefix: AddressPrefix::Mainnet,
+        version: 0,
+        payload: pubkey.to_vec()
+    };
+    let address_str: String = address.into();
+    println!("\naddress 1 : {}", address_str);
+    println!("address =>: kaspa:qzn3qjzf2nzyd3zj303nk4sgv0aae42v3ufutk5xsxckfels57dxjjed4qvlx");
+    print!("\n\n==================\n");
+
+    //Ok(())
+    */
     // Derive the root `XPrv` from the `seed` value
     //let root_xprv = XPrv::new(&seed)?;
     //assert_eq!(root_xprv, XPrv::derive_from_path(&seed, &"m".parse()?)?);
@@ -100,23 +143,27 @@ async fn test()->Result<()>{
     //let xpriv = child_xprv.to_string(Prefix::XPRV);
     //let xpub = child_xpub.to_string(Prefix::XPUB);
     let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57";//xpriv.as_str();
-    let hd_wallet = HDWallet::from_str(xpriv_str).await?;
-    let xpriv = hd_wallet.to_string();
-    let xpub = hd_wallet.public_key().to_string();
-    log_trace!("xpriv: {}", xpriv.as_str());
-    log_trace!("xpub : {}", xpub);
+
+    let hd_wallet = HDWalletGen0::from_str(xpriv_str).await?;
+    //let xpub = hd_wallet.public_key().to_string(Some(Prefix::KPUB));
+    //log_trace!("\nmasterKey : {}", hd_wallet.to_string().as_str());
+    //log_trace!("masterPubKey : {}", xpub);
+
+    //log_trace!("\nextendedKey: {}", hd_wallet.receive_wallet().to_string(Prefix::KPRV).as_str());
+    //log_trace!("extendedPubKey: {}\n", hd_wallet.receive_wallet().public_key().to_string(Some(Prefix::KPUB)));
+    
 
     let mut receive_addresses : Vec<String>= Vec::new();
     let mut change_addresses : Vec<String>= Vec::new();
     for index in 0..5000{
         receive_addresses.push(hd_wallet.derive_receive_address(index).await?.into());
         change_addresses.push(hd_wallet.derive_change_address(index).await?.into());
-        if index % 10 == 0{
-            yield_now().await;
+        if _use_yield && index % 10 == 0{
+            yield_executor().await;
         }
         
         if index % 200 == 0{
-            log_trace!("generating {}", index);
+            log_trace!("generating index:{}", index);
         }
         //sleep(Duration::from_secs(1)).await;
     }
@@ -166,6 +213,7 @@ async fn test()->Result<()>{
     println!("");
 
     Ok(())
+    
 }
 
 /*
@@ -182,8 +230,23 @@ pub async fn test_addresses(){
 
     //spawn(async move {
         log_trace!("testing addresses");
-        let result = test().await;
+        let result = test(true).await;
         log_trace!("result: {:?}", result);
     //});
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+    pub async fn addresses(){
+        let now = workflow_core::time::Instant::now();
+        let _result = test(true).await;
+        log_trace!("address created in {}s", now.elapsed().as_secs());
+        //log_trace!("result: {:?}", result);
+    }
+
+}
