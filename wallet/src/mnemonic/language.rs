@@ -6,7 +6,7 @@
 //! Adapted from the `bip39` crate
 
 use super::bits::{Bits, Bits11};
-use alloc::{collections::BTreeMap, vec::Vec};
+use std::{collections::BTreeMap, vec::Vec};
 
 /// Supported languages.
 ///
@@ -62,7 +62,7 @@ impl WordList {
 // TODO(tarcieri): use `const fn` instead of `Lazy`
 mod lazy {
     use super::{Bits11, WordList, WordMap};
-    use alloc::vec::Vec;
+    //use alloc::vec::Vec;
     use once_cell::sync::Lazy;
 
     /// lazy generation of the word list

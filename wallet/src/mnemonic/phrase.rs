@@ -5,7 +5,7 @@ use super::{
     language::Language,
 };
 use crate::{Error, KEY_SIZE};
-use alloc::{format, string::String};
+//use alloc::{format, string::String};
 use rand_core::{CryptoRng, RngCore};
 use sha2::{Digest, Sha256};
 use zeroize::{Zeroize, Zeroizing};

@@ -2,7 +2,7 @@
 //!
 //! Adapted from the `bip39` crate
 
-use alloc::{string::String, vec::Vec};
+//use alloc::{string::String, vec::Vec};
 use core::marker::PhantomData;
 
 pub(crate) trait IterExt: Iterator {

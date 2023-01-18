@@ -1,4 +1,4 @@
-extern crate alloc;
+//extern crate alloc;
 // use std::time::Duration;
 use wasm_bindgen::prelude::*;
 use workflow_core::task::*;
