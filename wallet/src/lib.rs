@@ -87,7 +87,6 @@ async fn test(_use_yield: bool) -> Result<()> {
     let xpriv_str = xpriv_str.as_str();
 
     //println!("xpriv: {}", xpriv_str);
-
     //println!("xpriv should be : kprv5y2qurMHCsXYrNfU3GCihuwG3vMqFji7PZXajMEqyBkNh9UZUJgoHYBLTKu1eM4MvUtomcXPQ3Sw9HZ5ebbM4byoUciHo1zrPJBQfqpLorQ");
     //println!("xpub : {}", xprv.public_key().to_string(Some(Prefix::KPUB)));
     //println!("xpub should be : kpub2Hv8W2rbSwaLD6XJt93SSEe6WPaoHyrH684QMpm5pKdQTY1CDvQoiPuXvCCfXFBKjHZXLQPDASuB3JREdS1GVKLV1P2AB2TiXRPAKXgjwFX");
@@ -137,9 +136,9 @@ async fn test(_use_yield: bool) -> Result<()> {
 
     //let xpriv = child_xprv.to_string(Prefix::XPRV);
     //let xpub = child_xpub.to_string(Prefix::XPUB);
-    let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57"; //xpriv.as_str();
+    //let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57"; //xpriv.as_str();
 
-    let hd_wallet = HDWalletGen0::from_str(xpriv_str).await?;
+    let hd_wallet = HDWalletGen1::from_str(xpriv_str).await?;
     //let xpub = hd_wallet.public_key().to_string(Some(Prefix::KPUB));
     //log_trace!("\nmasterKey : {}", hd_wallet.to_string().as_str());
     //log_trace!("masterPubKey : {}", xpub);
@@ -164,13 +163,13 @@ async fn test(_use_yield: bool) -> Result<()> {
 
     log_trace!("Receive addresses:");
     for (index, address) in receive_addresses.iter().enumerate() {
-        if index % 100 == 0 {
+        if index < 10 || index % 100 == 0 {
             log_trace!("#{index}: {}", address);
         }
     }
     log_trace!("Change addresses:");
     for (index, address) in change_addresses.iter().enumerate() {
-        if index % 100 == 0 {
+        if index < 10 || index % 100 == 0 {
             log_trace!("#{index}: {}", address);
         }
     }
@@ -202,7 +201,7 @@ async fn test(_use_yield: bool) -> Result<()> {
     assert!(verification_key.verify(example_msg, &signature).is_ok());
     */
 
-    println!("");
+    println!();
 
     Ok(())
 }

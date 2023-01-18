@@ -129,21 +129,18 @@ impl HDWalletGen0 {
         let attrs = xpriv_key.attrs();
 
         let receive_wallet = Self::derive_wallet(
-            xpriv_key.private_key().clone(),
+            *xpriv_key.private_key(),
             attrs.clone(),
             AddressType::Receive,
         )
         .await?;
 
-        let change_wallet = Self::derive_wallet(
-            xpriv_key.private_key().clone(),
-            attrs.clone(),
-            AddressType::Change,
-        )
-        .await?;
+        let change_wallet =
+            Self::derive_wallet(*xpriv_key.private_key(), attrs.clone(), AddressType::Change)
+                .await?;
 
         let wallet = Self {
-            private_key: xpriv_key.private_key().clone(),
+            private_key: *xpriv_key.private_key(),
             attrs: attrs.clone(),
             receive_wallet,
             change_wallet,
@@ -181,7 +178,7 @@ impl HDWalletGen0 {
         address_type: AddressType,
     ) -> Result<HDWalletInner> {
         let address_path = format!("44'/972/0'/{}'", address_type.index());
-        let children = address_path.split("/");
+        let children = address_path.split('/');
         for child in children {
             let c = child.parse::<ChildNumber>()?;
             //key = key.derive_child(c.clone())?;
@@ -200,8 +197,7 @@ impl HDWalletGen0 {
 
         let public_key_bytes = &private_key.get_public_key().to_bytes()[1..];
 
-        let digest = Ripemd160::digest(&Sha256::digest(public_key_bytes));
-        //let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key().to_bytes()[1..]));
+        let digest = Ripemd160::digest(Sha256::digest(public_key_bytes));
         let fingerprint = digest[..4].try_into().expect("digest truncated");
 
         let hmac = Self::create_hmac(&private_key, &attrs, true)?;
@@ -221,7 +217,7 @@ impl HDWalletGen0 {
     ) -> Result<(SecretKey, ExtendedKeyAttrs)> {
         let public_key_bytes = &private_key.get_public_key().to_bytes()[1..];
 
-        let digest = Ripemd160::digest(&Sha256::digest(public_key_bytes));
+        let digest = Ripemd160::digest(Sha256::digest(public_key_bytes));
         //let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key().to_bytes()[1..]));
         let fingerprint = digest[..4].try_into().expect("digest truncated");
 
@@ -294,7 +290,7 @@ impl HDWalletGen0 {
         Ok(derived)
     }
 
-    pub fn derive_private_key<'a>(
+    pub fn derive_private_key(
         private_key: &SecretKey,
         child_number: ChildNumber,
         mut hmac: HmacSha512,
@@ -334,7 +330,7 @@ impl HDWalletGen0 {
 
     /// Serialize the raw private key as a byte array.
     pub fn to_bytes(&self) -> PrivateKeyBytes {
-        self.private_key().to_bytes().into()
+        self.private_key().to_bytes()
     }
 
     /// Serialize this key as an [`ExtendedKey`].
@@ -394,8 +390,8 @@ impl Debug for HDWalletGen0 {
         f.debug_struct("HDWallet")
             .field("depth", &self.attrs.depth)
             .field("child_number", &self.attrs.child_number)
-            .field("chain_code", &hex::encode(&self.attrs.chain_code))
-            .field("private_key", &hex::encode(&self.to_bytes()))
+            .field("chain_code", &hex::encode(self.attrs.chain_code))
+            .field("private_key", &hex::encode(self.to_bytes()))
             .field("parent_fingerprint", &self.attrs.parent_fingerprint)
             .finish()
     }

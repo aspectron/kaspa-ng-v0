@@ -32,7 +32,7 @@ where
 {
     let public_key_bytes = private_key.public_key().to_bytes();
 
-    let digest = Ripemd160::digest(&Sha256::digest(public_key_bytes));
+    let digest = Ripemd160::digest(Sha256::digest(public_key_bytes));
     digest[..4].try_into().expect("digest truncated")
 }
 
@@ -144,21 +144,18 @@ impl HDWalletGen1 {
         let attrs = xpriv_key.attrs();
 
         let receive_wallet = Self::derive_wallet(
-            xpriv_key.private_key().clone(),
+            *xpriv_key.private_key(),
             attrs.clone(),
             AddressType::Receive,
         )
         .await?;
 
-        let change_wallet = Self::derive_wallet(
-            xpriv_key.private_key().clone(),
-            attrs.clone(),
-            AddressType::Change,
-        )
-        .await?;
+        let change_wallet =
+            Self::derive_wallet(*xpriv_key.private_key(), attrs.clone(), AddressType::Change)
+                .await?;
 
         let wallet = Self {
-            private_key: xpriv_key.private_key().clone(),
+            private_key: *xpriv_key.private_key(),
             attrs: attrs.clone(),
             receive_wallet,
             change_wallet,
@@ -203,7 +200,7 @@ impl HDWalletGen1 {
         address_type: AddressType,
     ) -> Result<HDWalletInner> {
         let address_path = format!("44'/111111'/0'/{}", address_type.index());
-        let children = address_path.split("/");
+        let children = address_path.split('/');
         //let mut index = 0;
         for child in children {
             (private_key, attrs) =
@@ -275,7 +272,7 @@ impl HDWalletGen1 {
         Ok(hmac)
     }
 
-    pub fn derive_private_key<'a>(
+    pub fn derive_private_key(
         private_key: &SecretKey,
         child_number: ChildNumber,
         mut hmac: HmacSha512,
@@ -315,7 +312,7 @@ impl HDWalletGen1 {
 
     /// Serialize the raw private key as a byte array.
     pub fn to_bytes(&self) -> PrivateKeyBytes {
-        self.private_key().to_bytes().into()
+        self.private_key().to_bytes()
     }
 
     /// Serialize this key as an [`ExtendedKey`].
@@ -373,8 +370,8 @@ impl Debug for HDWalletGen1 {
         f.debug_struct("HDWallet")
             .field("depth", &self.attrs.depth)
             .field("child_number", &self.attrs.child_number)
-            .field("chain_code", &hex::encode(&self.attrs.chain_code))
-            .field("private_key", &hex::encode(&self.to_bytes()))
+            .field("chain_code", &hex::encode(self.attrs.chain_code))
+            .field("private_key", &hex::encode(self.to_bytes()))
             .field("parent_fingerprint", &self.attrs.parent_fingerprint)
             .finish()
     }

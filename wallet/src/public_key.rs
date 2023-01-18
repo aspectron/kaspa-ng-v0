@@ -18,7 +18,7 @@ pub trait PublicKey: Sized {
     ///
     /// Default implementation uses `RIPEMD160(SHA256(public_key))`.
     fn fingerprint(&self) -> KeyFingerprint {
-        let digest = Ripemd160::digest(&Sha256::digest(&self.to_bytes()));
+        let digest = Ripemd160::digest(Sha256::digest(self.to_bytes()));
         digest[..4].try_into().expect("digest truncated")
     }
 }
