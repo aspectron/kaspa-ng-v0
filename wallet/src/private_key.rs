@@ -1,8 +1,8 @@
-use secp256k1_ffi::{Secp256k1, SignOnly, scalar::Scalar};
-pub use secp256k1_ffi::SecretKey;
+use crate::public_key::PublicKey;
 use crate::types::*;
 use crate::Result;
-use crate::public_key::PublicKey;
+pub use secp256k1_ffi::SecretKey;
+use secp256k1_ffi::{scalar::Scalar, Secp256k1, SignOnly};
 
 pub trait PrivateKey: Sized {
     /// Public key type which corresponds to this private key.

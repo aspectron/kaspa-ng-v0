@@ -1,29 +1,28 @@
-use zeroize::Zeroizing;
+use addresses::{Address, Prefix as AddressPrefix};
+use hmac::Mac;
 use ripemd::Ripemd160;
 use sha2::{Digest, Sha256};
 use std::fmt::Debug;
 use std::str::FromStr;
-use hmac::Mac;
-use addresses::{Address, Prefix as AddressPrefix};
+use zeroize::Zeroizing;
 //use secp256k1_ffi::SECP256K1;
 
 //use workflow_core::task::*;
 //use std::time::Duration;
 use crate::{
-    types::*,
-    ExtendedKeyAttrs,
     private_key::{PrivateKey, SecretKey},
-    PublicKey,
-    SecretKeyExt,
-    ChildNumber,
-    ExtendedPublicKey,
-    ExtendedPrivateKey,
-    ExtendedKey,
+    types::*,
     AddressType,
+    ChildNumber,
+    ExtendedKey,
+    ExtendedKeyAttrs,
+    ExtendedPrivateKey,
+    ExtendedPublicKey,
     Prefix,
     //yield_now
+    PublicKey,
+    SecretKeyExt,
 };
-
 
 #[derive(Clone)]
 pub struct HDWalletInner {
@@ -36,11 +35,11 @@ pub struct HDWalletInner {
     #[allow(dead_code)]
     fingerprint: [u8; 4],
 
-    hmac: HmacSha512
+    hmac: HmacSha512,
 }
 
-impl HDWalletInner{
-    pub async fn derive_address(&self, index: u32)->Result<Address>{
+impl HDWalletInner {
+    pub async fn derive_address(&self, index: u32) -> Result<Address> {
         //let child_number = ChildNumber::new(index, true)?;
         //key = key.derive_child(c.clone())?;
         //println!("\nc:    {c:?}");
@@ -65,11 +64,11 @@ impl HDWalletInner{
         let (private_key, _) = HDWalletGen0::derive_private_key(
             &self.private_key,
             ChildNumber::new(index, true)?,
-            self.hmac.clone()
+            self.hmac.clone(),
         )?;
         //sleep(Duration::from_secs(0)).await;
         //yield_now().await;
-        
+
         /*
         let key = ExtendedPublicKey {
             public_key: private_key.public_key(),
@@ -79,31 +78,30 @@ impl HDWalletInner{
 
         let pubkey = &private_key.get_public_key().to_bytes()[1..];
         //let pubkey = &private_key.public_key().to_bytes()[1..];
-        let address = Address{
+        let address = Address {
             prefix: AddressPrefix::Mainnet,
             version: 0,
-            payload: pubkey.to_vec()
+            payload: pubkey.to_vec(),
         };
 
         Ok(address)
     }
 
     #[allow(dead_code)]
-    pub fn public_key(&self) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>{
+    pub fn public_key(&self) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
         self.into()
     }
 
-    pub fn private_key(&self) -> &SecretKey{
+    pub fn private_key(&self) -> &SecretKey {
         &self.private_key
     }
 
-    pub fn attrs(&self) -> &ExtendedKeyAttrs{
+    pub fn attrs(&self) -> &ExtendedKeyAttrs {
         &self.attrs
     }
-
 }
 
-impl From<&HDWalletInner> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>{
+impl From<&HDWalletInner> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
     fn from(inner: &HDWalletInner) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
         ExtendedPublicKey {
             public_key: inner.private_key().get_public_key(),
@@ -112,7 +110,6 @@ impl From<&HDWalletInner> for ExtendedPublicKey<<SecretKey as PrivateKey>::Publi
         }
     }
 }
-
 
 #[derive(Clone)]
 pub struct HDWalletGen0 {
@@ -123,72 +120,69 @@ pub struct HDWalletGen0 {
     attrs: ExtendedKeyAttrs,
 
     receive_wallet: HDWalletInner,
-    change_wallet: HDWalletInner
+    change_wallet: HDWalletInner,
 }
 
-impl HDWalletGen0{
-
-    pub async fn from_str(xpriv: &str)->Result<Self>{
-
+impl HDWalletGen0 {
+    pub async fn from_str(xpriv: &str) -> Result<Self> {
         let xpriv_key = ExtendedPrivateKey::<SecretKey>::from_str(xpriv)?;
         let attrs = xpriv_key.attrs();
 
         let receive_wallet = Self::derive_wallet(
             xpriv_key.private_key().clone(),
             attrs.clone(),
-            AddressType::Receive
-        ).await?;
+            AddressType::Receive,
+        )
+        .await?;
 
         let change_wallet = Self::derive_wallet(
             xpriv_key.private_key().clone(),
             attrs.clone(),
-            AddressType::Change
-        ).await?;
+            AddressType::Change,
+        )
+        .await?;
 
-        let wallet =  Self{
+        let wallet = Self {
             private_key: xpriv_key.private_key().clone(),
             attrs: attrs.clone(),
             receive_wallet,
-            change_wallet
+            change_wallet,
         };
-    
+
         Ok(wallet)
     }
 
     #[allow(dead_code)]
-    pub async fn derive_address(&self, address_type: AddressType, index: u32)->Result<Address>{
-        let address = match address_type{
-            AddressType::Receive=>{
-                self.receive_wallet.derive_address(index)
-            }
-            AddressType::Change=>{
-                self.change_wallet.derive_address(index)
-            }
-        }.await?;
+    pub async fn derive_address(&self, address_type: AddressType, index: u32) -> Result<Address> {
+        let address = match address_type {
+            AddressType::Receive => self.receive_wallet.derive_address(index),
+            AddressType::Change => self.change_wallet.derive_address(index),
+        }
+        .await?;
 
         Ok(address)
     }
 
     #[inline(always)]
-    pub async fn derive_receive_address(&self, index: u32)->Result<Address>{
+    pub async fn derive_receive_address(&self, index: u32) -> Result<Address> {
         let address = self.receive_wallet.derive_address(index).await?;
         Ok(address)
     }
 
     #[inline(always)]
-    pub async fn derive_change_address(&self, index: u32)->Result<Address>{
+    pub async fn derive_change_address(&self, index: u32) -> Result<Address> {
         let address = self.change_wallet.derive_address(index).await?;
         Ok(address)
     }
 
     pub async fn derive_wallet(
-        mut private_key: SecretKey, 
+        mut private_key: SecretKey,
         mut attrs: ExtendedKeyAttrs,
-        address_type: AddressType
-    )->Result<HDWalletInner>{
+        address_type: AddressType,
+    ) -> Result<HDWalletInner> {
         let address_path = format!("44'/972/0'/{}'", address_type.index());
         let children = address_path.split("/");
-        for child in children{
+        for child in children {
             let c = child.parse::<ChildNumber>()?;
             //key = key.derive_child(c.clone())?;
             //println!("\nc:    {c:?}");
@@ -210,46 +204,37 @@ impl HDWalletGen0{
         //let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key().to_bytes()[1..]));
         let fingerprint = digest[..4].try_into().expect("digest truncated");
 
-        let hmac = Self::create_hmac(
-            &private_key,
-            &attrs,
-            true
-        )?;
+        let hmac = Self::create_hmac(&private_key, &attrs, true)?;
 
-        Ok(HDWalletInner{
+        Ok(HDWalletInner {
             private_key,
             attrs,
             fingerprint,
-            hmac
+            hmac,
         })
     }
-    
-    pub async fn derive_child(
-        private_key: &SecretKey, 
-        attrs: &ExtendedKeyAttrs,
-        child_number: ChildNumber
-    ) -> Result<(SecretKey, ExtendedKeyAttrs)> {
 
+    pub async fn derive_child(
+        private_key: &SecretKey,
+        attrs: &ExtendedKeyAttrs,
+        child_number: ChildNumber,
+    ) -> Result<(SecretKey, ExtendedKeyAttrs)> {
         let public_key_bytes = &private_key.get_public_key().to_bytes()[1..];
 
         let digest = Ripemd160::digest(&Sha256::digest(public_key_bytes));
         //let digest = Ripemd160::digest(&Sha256::digest(&private_key.public_key().to_bytes()[1..]));
         let fingerprint = digest[..4].try_into().expect("digest truncated");
 
+        let hmac = Self::create_hmac(private_key, attrs, child_number.is_hardened())?;
 
-        let hmac = Self::create_hmac(
-            private_key,
-            attrs,
-            child_number.is_hardened()
-        )?;
-    
         let res = Self::derive_child_with_fingerprint(
             private_key,
             attrs,
             child_number,
             fingerprint,
-            hmac
-        ).await?;
+            hmac,
+        )
+        .await?;
 
         Ok(res)
     }
@@ -258,9 +243,8 @@ impl HDWalletGen0{
         private_key: &SecretKey,
         attrs: &ExtendedKeyAttrs,
         hardened: bool,
-    )->Result<HmacSha512>{
-        let mut hmac =
-            HmacSha512::new_from_slice(&attrs.chain_code).map_err(|_| Error::Crypto)?;
+    ) -> Result<HmacSha512> {
+        let mut hmac = HmacSha512::new_from_slice(&attrs.chain_code).map_err(|_| Error::Crypto)?;
         if hardened {
             hmac.update(&[0]);
             hmac.update(&private_key.to_bytes());
@@ -276,21 +260,16 @@ impl HDWalletGen0{
     }
 
     pub async fn derive_child_with_fingerprint(
-        private_key: &SecretKey, 
+        private_key: &SecretKey,
         attrs: &ExtendedKeyAttrs,
         child_number: ChildNumber,
         fingerprint: [u8; 4],
-        hmac: HmacSha512
+        hmac: HmacSha512,
     ) -> Result<(SecretKey, ExtendedKeyAttrs)> {
-        
-        let (private_key, chain_code) = Self::derive_private_key(
-            private_key,
-            child_number,
-            hmac
-        )?;
-    
+        let (private_key, chain_code) = Self::derive_private_key(private_key, child_number, hmac)?;
+
         let depth = attrs.depth.checked_add(1).ok_or(Error::Depth)?;
-    
+
         let attrs = ExtendedKeyAttrs {
             parent_fingerprint: fingerprint,
             child_number,
@@ -318,12 +297,12 @@ impl HDWalletGen0{
     pub fn derive_private_key<'a>(
         private_key: &SecretKey,
         child_number: ChildNumber,
-        mut hmac: HmacSha512
-    )->Result<(SecretKey, ChainCode)>{
+        mut hmac: HmacSha512,
+    ) -> Result<(SecretKey, ChainCode)> {
         /*
         println!("\n private_key: {}", hex::encode(private_key.to_bytes()));
-        
-        println!("\n_deriveWithNumber {}, {}, {}, fingerprint:{}", 
+
+        println!("\n_deriveWithNumber {}, {}, {}, fingerprint:{}",
             child_number,
             child_number.is_hardened(),
             hex::encode(private_key.get_public_key().to_bytes()),
@@ -353,7 +332,6 @@ impl HDWalletGen0{
         Ok((private_key, chain_code.try_into()?))
     }
 
-
     /// Serialize the raw private key as a byte array.
     pub fn to_bytes(&self) -> PrivateKeyBytes {
         self.private_key().to_bytes().into()
@@ -373,9 +351,9 @@ impl HDWalletGen0{
     }
 
     /// Serialize this key as a self-[`Zeroizing`] `String`.
-    pub fn to_string(&self, ) -> Zeroizing<String> {
+    pub fn to_string(&self) -> Zeroizing<String> {
         let key = self.to_extended_key(Prefix::XPRV);
-        
+
         //println!("str: {str}");
         Zeroizing::new(key.to_string())
     }
@@ -389,21 +367,19 @@ impl HDWalletGen0{
     }
     */
 
-    
-    pub fn public_key(&self) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>{
+    pub fn public_key(&self) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
         self.into()
     }
 
-    pub fn private_key(&self) -> &SecretKey{
+    pub fn private_key(&self) -> &SecretKey {
         &self.private_key
     }
-    pub fn attrs(&self) -> &ExtendedKeyAttrs{
+    pub fn attrs(&self) -> &ExtendedKeyAttrs {
         &self.attrs
     }
 }
 
-
-impl From<&HDWalletGen0> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey>{
+impl From<&HDWalletGen0> for ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
     fn from(hd_wallet: &HDWalletGen0) -> ExtendedPublicKey<<SecretKey as PrivateKey>::PublicKey> {
         ExtendedPublicKey {
             public_key: hd_wallet.private_key().get_public_key(),
@@ -413,7 +389,7 @@ impl From<&HDWalletGen0> for ExtendedPublicKey<<SecretKey as PrivateKey>::Public
     }
 }
 
-impl Debug for HDWalletGen0{
+impl Debug for HDWalletGen0 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("HDWallet")
             .field("depth", &self.attrs.depth)
@@ -439,7 +415,7 @@ pub fn write_base58<'a>(key:&ExtendedKey, buffer: &'a mut [u8; ExtendedKey::MAX_
     bytes[9..13].copy_from_slice(&key.attrs.child_number.to_bytes());
     bytes[13..45].copy_from_slice(&key.attrs.chain_code);
     bytes[45..78].copy_from_slice(&key.key_bytes);
-    
+
     println!("<Buffer {}>", hex::encode(key.prefix.to_bytes()));
     println!("<Buffer {}>", hex::encode([key.attrs.depth]));
     println!("<Buffer {}>", hex::encode(key.attrs.parent_fingerprint));
@@ -455,4 +431,3 @@ pub fn write_base58<'a>(key:&ExtendedKey, buffer: &'a mut [u8; ExtendedKey::MAX_
     std::str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
 }
 */
-

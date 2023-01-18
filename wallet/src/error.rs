@@ -31,7 +31,7 @@ pub enum Error {
     SeedLength,
 
     /// Scalar OutOfRangeError
-    ScalarOutOfRangeError
+    ScalarOutOfRangeError,
 }
 
 impl Display for Error {
@@ -82,7 +82,6 @@ impl From<secp256k1_ffi::Error> for Error {
         Error::Crypto
     }
 }
-
 
 impl From<secp256k1_ffi::scalar::OutOfRangeError> for Error {
     fn from(_: secp256k1_ffi::scalar::OutOfRangeError) -> Error {

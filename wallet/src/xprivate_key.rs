@@ -1,26 +1,18 @@
 use hmac::Mac;
 use std::fmt::{self, Debug};
 use std::str::FromStr;
-use zeroize::{Zeroize, Zeroizing};
 use subtle::{Choice, ConstantTimeEq};
+use zeroize::{Zeroize, Zeroizing};
 
 use crate::{
-    Prefix,
-    ExtendedKeyAttrs,
-    ExtendedKey,
-    PrivateKey,
-    PublicKey,
-    ChildNumber,
-    ExtendedPublicKey,
-    types::*,
-    result::Result
+    result::Result, types::*, ChildNumber, ExtendedKey, ExtendedKeyAttrs, ExtendedPublicKey,
+    Prefix, PrivateKey, PublicKey,
 };
 
 /// Derivation domain separator for BIP39 keys.
 const BIP39_DOMAIN_SEPARATOR: [u8; 12] = [
     0x42, 0x69, 0x74, 0x63, 0x6f, 0x69, 0x6e, 0x20, 0x73, 0x65, 0x65, 0x64,
 ];
-
 
 /// Extended private keys derived using BIP32.
 ///
@@ -227,4 +219,3 @@ where
         }
     }
 }
-

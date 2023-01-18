@@ -1,58 +1,53 @@
-
 extern crate alloc;
 // use std::time::Duration;
 use wasm_bindgen::prelude::*;
-use workflow_log::log_trace;
 use workflow_core::task::*;
+use workflow_log::log_trace;
 use zeroize::Zeroizing;
 
 //use bip32;
 
-mod xprivate_key;
-mod xpublic_key;
 mod private_key;
 mod public_key;
 mod xkey;
+mod xprivate_key;
+mod xpublic_key;
 
 mod address_type;
-mod types;
-mod error;
-mod result;
-mod wallets;
 mod attrs;
 mod child_number;
-mod prefix;
+mod error;
 mod mnemonic;
+mod prefix;
+mod result;
+mod types;
+mod wallets;
 
-pub use xprivate_key::ExtendedPrivateKey;
-pub use xpublic_key::ExtendedPublicKey;
+pub use address_type::AddressType;
+pub use addresses::{Address, Prefix as AddressPrefix};
+pub use attrs::ExtendedKeyAttrs;
+pub use child_number::ChildNumber;
+pub use mnemonic::{Language, Mnemonic};
+pub use prefix::Prefix;
 pub use private_key::PrivateKey;
 pub use public_key::PublicKey;
-pub use xkey::ExtendedKey;
-pub use attrs::ExtendedKeyAttrs;
-pub use prefix::Prefix;
-pub use child_number::ChildNumber;
 pub use types::*;
-pub use address_type::AddressType;
 pub use wallets::HDWalletGen0;
 pub use wallets::HDWalletGen1;
-pub use addresses::{Address, Prefix as AddressPrefix};
-pub use mnemonic::{
-    Mnemonic,
-    Language
-};
+pub use xkey::ExtendedKey;
+pub use xprivate_key::ExtendedPrivateKey;
+pub use xpublic_key::ExtendedPublicKey;
 
-
-pub trait SecretKeyExt{
-    fn get_public_key(&self)->secp256k1_ffi::PublicKey;
-    fn as_str(&self, attrs: ExtendedKeyAttrs, prefix: Prefix)->Zeroizing<String>;
+pub trait SecretKeyExt {
+    fn get_public_key(&self) -> secp256k1_ffi::PublicKey;
+    fn as_str(&self, attrs: ExtendedKeyAttrs, prefix: Prefix) -> Zeroizing<String>;
 }
 
-impl SecretKeyExt for secp256k1_ffi::SecretKey{
-    fn get_public_key(&self)->secp256k1_ffi::PublicKey {
+impl SecretKeyExt for secp256k1_ffi::SecretKey {
+    fn get_public_key(&self) -> secp256k1_ffi::PublicKey {
         secp256k1_ffi::PublicKey::from_secret_key_global(self)
     }
-    fn as_str(&self, attrs:ExtendedKeyAttrs, prefix: Prefix)->Zeroizing<String>{
+    fn as_str(&self, attrs: ExtendedKeyAttrs, prefix: Prefix) -> Zeroizing<String> {
         // Add leading `0` byte
         let mut key_bytes = [0u8; KEY_SIZE + 1];
         key_bytes[1..].copy_from_slice(&self.to_bytes());
@@ -67,7 +62,7 @@ impl SecretKeyExt for secp256k1_ffi::SecretKey{
     }
 }
 
-async fn test(_use_yield:bool)->Result<()>{
+async fn test(_use_yield: bool) -> Result<()> {
     // init_yield();
 
     //return Ok(());
@@ -92,7 +87,7 @@ async fn test(_use_yield:bool)->Result<()>{
     let xpriv_str = xpriv_str.as_str();
 
     //println!("xpriv: {}", xpriv_str);
-    
+
     //println!("xpriv should be : kprv5y2qurMHCsXYrNfU3GCihuwG3vMqFji7PZXajMEqyBkNh9UZUJgoHYBLTKu1eM4MvUtomcXPQ3Sw9HZ5ebbM4byoUciHo1zrPJBQfqpLorQ");
     //println!("xpub : {}", xprv.public_key().to_string(Some(Prefix::KPUB)));
     //println!("xpub should be : kpub2Hv8W2rbSwaLD6XJt93SSEe6WPaoHyrH684QMpm5pKdQTY1CDvQoiPuXvCCfXFBKjHZXLQPDASuB3JREdS1GVKLV1P2AB2TiXRPAKXgjwFX");
@@ -142,7 +137,7 @@ async fn test(_use_yield:bool)->Result<()>{
 
     //let xpriv = child_xprv.to_string(Prefix::XPRV);
     //let xpub = child_xpub.to_string(Prefix::XPUB);
-    let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57";//xpriv.as_str();
+    let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57"; //xpriv.as_str();
 
     let hd_wallet = HDWalletGen0::from_str(xpriv_str).await?;
     //let xpub = hd_wallet.public_key().to_string(Some(Prefix::KPUB));
@@ -151,37 +146,34 @@ async fn test(_use_yield:bool)->Result<()>{
 
     //log_trace!("\nextendedKey: {}", hd_wallet.receive_wallet().to_string(Prefix::KPRV).as_str());
     //log_trace!("extendedPubKey: {}\n", hd_wallet.receive_wallet().public_key().to_string(Some(Prefix::KPUB)));
-    
 
-    let mut receive_addresses : Vec<String>= Vec::new();
-    let mut change_addresses : Vec<String>= Vec::new();
-    for index in 0..5000{
+    let mut receive_addresses: Vec<String> = Vec::new();
+    let mut change_addresses: Vec<String> = Vec::new();
+    for index in 0..5000 {
         receive_addresses.push(hd_wallet.derive_receive_address(index).await?.into());
         change_addresses.push(hd_wallet.derive_change_address(index).await?.into());
-        if _use_yield && index % 10 == 0{
+        if _use_yield && index % 10 == 0 {
             yield_executor().await;
         }
-        
-        if index % 200 == 0{
+
+        if index % 200 == 0 {
             log_trace!("generating index:{}", index);
         }
         //sleep(Duration::from_secs(1)).await;
     }
 
     log_trace!("Receive addresses:");
-    for (index, address)in receive_addresses.iter().enumerate(){
-        if index % 100 == 0{
+    for (index, address) in receive_addresses.iter().enumerate() {
+        if index % 100 == 0 {
             log_trace!("#{index}: {}", address);
         }
     }
     log_trace!("Change addresses:");
-    for (index, address)in change_addresses.iter().enumerate(){
-        if index % 100 == 0{
+    for (index, address) in change_addresses.iter().enumerate() {
+        if index % 100 == 0 {
             log_trace!("#{index}: {}", address);
         }
     }
-
-    
 
     //println!("key: {:?}", key.to_string(Prefix::XPRV).as_str());
     //let priv_key = xpriv_key. (child_number)
@@ -213,7 +205,6 @@ async fn test(_use_yield:bool)->Result<()>{
     println!("");
 
     Ok(())
-    
 }
 
 /*
@@ -224,14 +215,12 @@ async fn main() {
 }
 */
 
-
 #[wasm_bindgen]
-pub async fn test_addresses(){
-
+pub async fn test_addresses() {
     //spawn(async move {
-        log_trace!("testing addresses");
-        let result = test(true).await;
-        log_trace!("result: {:?}", result);
+    log_trace!("testing addresses");
+    let result = test(true).await;
+    log_trace!("result: {:?}", result);
     //});
 }
 
@@ -242,11 +231,10 @@ mod tests {
     use super::*;
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-    pub async fn addresses(){
+    pub async fn addresses() {
         let now = workflow_core::time::Instant::now();
         let _result = test(true).await;
         log_trace!("address created in {}s", now.elapsed().as_secs());
         //log_trace!("result: {:?}", result);
     }
-
 }

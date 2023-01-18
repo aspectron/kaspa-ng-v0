@@ -25,4 +25,3 @@ pub type Version = u32;
 pub type HmacSha512 = hmac::Hmac<sha2::Sha512>;
 
 pub use crate::error::*;
-

@@ -1,22 +1,11 @@
 //! Extended public keys
-//! 
+//!
+use crate::{
+    types::*, ChildNumber, Error, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey,
+    KeyFingerprint, Prefix, PrivateKey, PublicKey, PublicKeyBytes, Result, KEY_SIZE,
+};
 use core::str::FromStr;
 use hmac::Mac;
-use crate::{
-    types::*,
-    PrivateKey,
-    PublicKey,
-    ChildNumber,
-    Error,
-    ExtendedKey, 
-    ExtendedKeyAttrs, 
-    ExtendedPrivateKey,
-    KeyFingerprint,
-    Prefix,
-    PublicKeyBytes, 
-    Result,
-    KEY_SIZE,
-};
 
 /// Extended public secp256k1 ECDSA verification key.
 //#[cfg(feature = "secp256k1")]
