@@ -38,7 +38,7 @@ impl PublicKey for secp256k1_ffi::PublicKey {
         let other = Scalar::from_be_bytes(other)?;
 
         let child_key = *self;
-        child_key
+        let child_key = child_key
             .add_exp_tweak(&engine, &other)
             //.add_exp_assign(&engine, &other)
             .map_err(|_| Error::Crypto)?;

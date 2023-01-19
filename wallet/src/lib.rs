@@ -4,7 +4,7 @@ use workflow_core::task::yield_executor;
 use workflow_log::log_trace;
 
 mod wallets;
-use wallets::{HDWalletGen0, HDWalletGen1};
+use wallets::*;
 
 async fn test(_use_yield: bool) -> Result<()> {
     // init_yield();
@@ -82,17 +82,20 @@ async fn test(_use_yield: bool) -> Result<()> {
     //let xpub = child_xpub.to_string(Prefix::XPUB);
     //let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57"; //xpriv.as_str();
 
-    let hd_wallet = HDWalletGen1::from_str(xpriv_str).await?;
+    let hd_wallet = HDWalletGen2::from_str(xpriv_str).await?;
     //let xpub = hd_wallet.public_key().to_string(Some(Prefix::KPUB));
     //log_trace!("\nmasterKey : {}", hd_wallet.to_string().as_str());
-    //log_trace!("masterPubKey : {}", xpub);
+    log_trace!("masterPubKey : {}", hd_wallet.to_string().as_str());
 
-    //log_trace!("\nextendedKey: {}", hd_wallet.receive_wallet().to_string(Prefix::KPRV).as_str());
+    log_trace!(
+        "\nextendedKey: {}",
+        hd_wallet.receive_wallet().to_string().as_str()
+    );
     //log_trace!("extendedPubKey: {}\n", hd_wallet.receive_wallet().public_key().to_string(Some(Prefix::KPUB)));
 
     let mut receive_addresses: Vec<String> = Vec::new();
     let mut change_addresses: Vec<String> = Vec::new();
-    for index in 0..5000 {
+    for index in 0..10 {
         receive_addresses.push(hd_wallet.derive_receive_address(index).await?.into());
         change_addresses.push(hd_wallet.derive_change_address(index).await?.into());
         if _use_yield && index % 10 == 0 {
