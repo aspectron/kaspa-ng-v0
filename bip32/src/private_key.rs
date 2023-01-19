@@ -1,4 +1,4 @@
-use crate::public_key::PublicKey;
+use crate::PublicKey;
 use crate::types::*;
 use crate::Result;
 pub use secp256k1_ffi::SecretKey;

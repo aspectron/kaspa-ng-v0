@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rand_core= { version = "0.6", features = ["std"] }
+#rand_core= { version = "0.6", features = ["std"] }
 workflow-log = {path="../../workflow-log", features=[]}
 workflow-core = {path="../../workflow-core" }
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
@@ -13,18 +13,17 @@ hex = "*"
 addresses = {path="../../rusty-kaspa/crypto/addresses"}
 kaspa-bip32 = {path="../bip32"}
 
-[dependencies.bs58]
-version = "0.4"
-features = ["check"]
-default-features = false
+#[dependencies.bs58]
+#version = "0.4"
+#features = ["check"]
+#default-features = false
 
 [dependencies.hmac]
 version = "0.12"
 default-features = false
 
-[dependencies.secp256k1-ffi]
+[dependencies.secp256k1]
 version = "0.24"
-package = "secp256k1"
 features=["global-context", "rand-std"]
 
 [dependencies.sha2]
@@ -40,12 +39,12 @@ features=["alloc"]
 version = "0.1"
 default-features = false
 
-[dependencies.subtle]
-version = "2"
-default-features = false
+#[dependencies.subtle]
+#version = "2"
+#default-features = false
 
-[dependencies.js-sys]
-version="*"
+#[dependencies.js-sys]
+#version="*"
 
 #[dependencies.async-std]
 #version = "1.12.0"
@@ -54,13 +53,13 @@ version="*"
 [dependencies.tokio]
 version="*"
 
-[dependencies.once_cell]
-version = "1"
+#[dependencies.once_cell]
+#version = "1"
 
-[dependencies.pbkdf2]
-version = "0.11"
+#[dependencies.pbkdf2]
+#version = "0.11"
 #optional = true
-default-features = false
+#default-features = false
 
 #[features]
 #alloc = ["zeroize/alloc"]

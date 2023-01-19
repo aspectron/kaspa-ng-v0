@@ -5,12 +5,7 @@ use sha2::{Digest, Sha256};
 use std::fmt::Debug;
 use std::str::FromStr;
 use zeroize::Zeroizing;
-//use secp256k1_ffi::{Secp256k1, SignOnly};
-//use workflow_log::log_trace;
-//use secp256k1_ffi::SECP256K1;
 
-//use workflow_core::task::*;
-//use std::time::Duration;
 use kaspa_bip32::{
     PrivateKey,
     SecretKey,
@@ -259,7 +254,7 @@ impl HDWalletGen1 {
         hardened: bool,
     ) -> Result<HmacSha512>
     where
-        K: PrivateKey<PublicKey = secp256k1_ffi::PublicKey>,
+        K: PrivateKey<PublicKey = secp256k1::PublicKey>,
     {
         let mut hmac = HmacSha512::new_from_slice(&attrs.chain_code).map_err(|_| Error::Crypto)?;
         if hardened {
