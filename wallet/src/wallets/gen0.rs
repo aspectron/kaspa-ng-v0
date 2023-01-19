@@ -10,18 +10,8 @@ use zeroize::Zeroizing;
 //use workflow_core::task::*;
 //use std::time::Duration;
 use kaspa_bip32::{
-    PrivateKey,
-    SecretKey,
-    types::*,
-    AddressType,
-    ChildNumber,
-    ExtendedKey,
-    ExtendedKeyAttrs,
-    ExtendedPrivateKey,
-    ExtendedPublicKey,
-    Prefix,
-    PublicKey,
-    SecretKeyExt,
+    types::*, AddressType, ChildNumber, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey,
+    ExtendedPublicKey, Prefix, PrivateKey, PublicKey, SecretKey, SecretKeyExt,
 };
 
 #[derive(Clone)]

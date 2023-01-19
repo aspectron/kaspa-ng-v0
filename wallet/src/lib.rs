@@ -1,12 +1,10 @@
 use kaspa_bip32::*;
-use workflow_log::log_trace;
-use workflow_core::task::yield_executor;
 use wasm_bindgen::prelude::*;
+use workflow_core::task::yield_executor;
+use workflow_log::log_trace;
 
 mod wallets;
 use wallets::{HDWalletGen0, HDWalletGen1};
-
-
 
 async fn test(_use_yield: bool) -> Result<()> {
     // init_yield();

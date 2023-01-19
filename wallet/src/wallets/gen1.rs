@@ -7,18 +7,8 @@ use std::str::FromStr;
 use zeroize::Zeroizing;
 
 use kaspa_bip32::{
-    PrivateKey,
-    SecretKey,
-    types::*,
-    AddressType,
-    ChildNumber,
-    ExtendedKey,
-    ExtendedKeyAttrs,
-    ExtendedPrivateKey,
-    ExtendedPublicKey,
-    Prefix,
-    PublicKey,
-    SecretKeyExt,
+    types::*, AddressType, ChildNumber, ExtendedKey, ExtendedKeyAttrs, ExtendedPrivateKey,
+    ExtendedPublicKey, Prefix, PrivateKey, PublicKey, SecretKey, SecretKeyExt,
 };
 
 fn get_fingerprint<K>(private_key: &K) -> KeyFingerprint
@@ -357,4 +347,3 @@ impl Debug for HDWalletGen1 {
             .finish()
     }
 }
-
