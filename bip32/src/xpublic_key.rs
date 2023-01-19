@@ -94,6 +94,13 @@ where
         let prefix = prefix.unwrap_or(Prefix::XPUB);
         self.to_extended_key(prefix).to_string()
     }
+
+    pub fn from_public_key(public_key:K, attrs: &ExtendedKeyAttrs)->Self{
+        ExtendedPublicKey {
+            public_key: public_key,
+            attrs: attrs.clone(),
+        }
+    }
 }
 
 impl<K> From<&ExtendedPrivateKey<K>> for ExtendedPublicKey<K::PublicKey>
@@ -107,6 +114,7 @@ where
         }
     }
 }
+
 
 impl<K> FromStr for ExtendedPublicKey<K>
 where

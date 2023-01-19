@@ -4,7 +4,7 @@ use workflow_core::task::yield_executor;
 use workflow_log::log_trace;
 
 mod wallets;
-use wallets::*;
+pub use wallets::*;
 
 async fn test(_use_yield: bool) -> Result<()> {
     // init_yield();
@@ -28,7 +28,7 @@ async fn test(_use_yield: bool) -> Result<()> {
 
     //println!("private_key: {}", hex::encode(xprv.private_key().to_bytes()));
     let xpriv_str = xprv.to_string(Prefix::KPRV);
-    let xpriv_str = xpriv_str.as_str();
+    let _xpriv_str = xpriv_str.as_str();
 
     //println!("xpriv: {}", xpriv_str);
     //println!("xpriv should be : kprv5y2qurMHCsXYrNfU3GCihuwG3vMqFji7PZXajMEqyBkNh9UZUJgoHYBLTKu1eM4MvUtomcXPQ3Sw9HZ5ebbM4byoUciHo1zrPJBQfqpLorQ");
@@ -82,15 +82,17 @@ async fn test(_use_yield: bool) -> Result<()> {
     //let xpub = child_xpub.to_string(Prefix::XPUB);
     //let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57"; //xpriv.as_str();
 
-    let hd_wallet = HDWalletGen2::from_xprv(xpriv_str, false, 0).await?;
+    let hd_wallet = HDWalletGen2::from_master_xprv(_xpriv_str, false, 0).await?;
+    //let xpublic_key = "kpub2K5JP5BKvfwttwv3aCdLAiF26nZugo8HA5SNv51hHCRRf5fWx8qPYjNxRBNc8tracpahrC3HpqK5VoaTS9hrT1q7LuzQL4LchptgsHhsThv";
+    //let hd_wallet = HDWalletGen2::from_extended_public_key_str(xpublic_key).await?;
     //let xpub = hd_wallet.public_key().to_string(Some(Prefix::KPUB));
     //log_trace!("\nmasterKey : {}", hd_wallet.to_string().as_str());
-    log_trace!("masterPubKey : {}", hd_wallet.to_string().as_str());
+    log_trace!("extendedPubKey : {}", hd_wallet.to_string().as_str());
 
-    log_trace!(
-        "\nextendedKey: {}",
-        hd_wallet.receive_wallet().to_string().as_str()
-    );
+    //log_trace!(
+    //    "\nextendedKey: {}",
+    //    hd_wallet.receive_wallet().to_string().as_str()
+    //);
     //log_trace!("extendedPubKey: {}\n", hd_wallet.receive_wallet().public_key().to_string(Some(Prefix::KPUB)));
 
     let mut receive_addresses: Vec<String> = Vec::new();
