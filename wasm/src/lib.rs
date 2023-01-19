@@ -1,4 +1,4 @@
-#[allow(unused_imports)] use kaspa_apps_core::*;
+#[allow(unused_imports)] use kaspa_ng_core::*;
 
-#[allow(unused_imports)] use kaspa_wallet::*;
+#[allow(unused_imports)] use kaspa_ng_wallet::*;
 

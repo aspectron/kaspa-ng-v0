@@ -1,66 +1,12 @@
-//extern crate alloc;
-// use std::time::Duration;
-use wasm_bindgen::prelude::*;
-use workflow_core::task::*;
+use kaspa_bip32::*;
 use workflow_log::log_trace;
-use zeroize::Zeroizing;
+use workflow_core::task::yield_executor;
+use wasm_bindgen::prelude::*;
 
-//use bip32;
-
-mod private_key;
-mod public_key;
-mod xkey;
-mod xprivate_key;
-mod xpublic_key;
-
-mod address_type;
-mod attrs;
-mod child_number;
-mod error;
-mod mnemonic;
-mod prefix;
-mod result;
-mod types;
 mod wallets;
+use wallets::{HDWalletGen0, HDWalletGen1};
 
-pub use address_type::AddressType;
-pub use addresses::{Address, Prefix as AddressPrefix};
-pub use attrs::ExtendedKeyAttrs;
-pub use child_number::ChildNumber;
-pub use mnemonic::{Language, Mnemonic};
-pub use prefix::Prefix;
-pub use private_key::PrivateKey;
-pub use public_key::PublicKey;
-pub use types::*;
-pub use wallets::HDWalletGen0;
-pub use wallets::HDWalletGen1;
-pub use xkey::ExtendedKey;
-pub use xprivate_key::ExtendedPrivateKey;
-pub use xpublic_key::ExtendedPublicKey;
 
-pub trait SecretKeyExt {
-    fn get_public_key(&self) -> secp256k1_ffi::PublicKey;
-    fn as_str(&self, attrs: ExtendedKeyAttrs, prefix: Prefix) -> Zeroizing<String>;
-}
-
-impl SecretKeyExt for secp256k1_ffi::SecretKey {
-    fn get_public_key(&self) -> secp256k1_ffi::PublicKey {
-        secp256k1_ffi::PublicKey::from_secret_key_global(self)
-    }
-    fn as_str(&self, attrs: ExtendedKeyAttrs, prefix: Prefix) -> Zeroizing<String> {
-        // Add leading `0` byte
-        let mut key_bytes = [0u8; KEY_SIZE + 1];
-        key_bytes[1..].copy_from_slice(&self.to_bytes());
-
-        let key = ExtendedKey {
-            prefix,
-            attrs,
-            key_bytes,
-        };
-
-        Zeroizing::new(key.to_string())
-    }
-}
 
 async fn test(_use_yield: bool) -> Result<()> {
     // init_yield();

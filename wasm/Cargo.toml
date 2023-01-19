@@ -12,8 +12,8 @@ test = []
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-kaspa-apps-core = { path = "../core" }
-kaspa-wallet = { path = "../wallet" }
+kaspa-ng-core = { path = "../core" }
+kaspa-ng-wallet = { path = "../wallet" }
 
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.29"

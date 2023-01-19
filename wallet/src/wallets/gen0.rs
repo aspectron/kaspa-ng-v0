@@ -9,8 +9,9 @@ use zeroize::Zeroizing;
 
 //use workflow_core::task::*;
 //use std::time::Duration;
-use crate::{
-    private_key::{PrivateKey, SecretKey},
+use kaspa_bip32::{
+    PrivateKey,
+    SecretKey,
     types::*,
     AddressType,
     ChildNumber,
@@ -19,7 +20,6 @@ use crate::{
     ExtendedPrivateKey,
     ExtendedPublicKey,
     Prefix,
-    //yield_now
     PublicKey,
     SecretKeyExt,
 };

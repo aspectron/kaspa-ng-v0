@@ -1,5 +1,5 @@
 [package]
-name = "kaspa-ng-wallet"
+name = "kaspa-bip32"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,8 +10,7 @@ workflow-core = {path="../../workflow-core" }
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.33"
 hex = "*"
-addresses = {path="../../rusty-kaspa/crypto/addresses"}
-kaspa-bip32 = {path="../bip32"}
+#bip32 = "0.4.0"
 
 [dependencies.bs58]
 version = "0.4"

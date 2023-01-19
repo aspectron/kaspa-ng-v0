@@ -11,8 +11,9 @@ use zeroize::Zeroizing;
 
 //use workflow_core::task::*;
 //use std::time::Duration;
-use crate::{
-    private_key::{PrivateKey, SecretKey},
+use kaspa_bip32::{
+    PrivateKey,
+    SecretKey,
     types::*,
     AddressType,
     ChildNumber,
@@ -21,7 +22,6 @@ use crate::{
     ExtendedPrivateKey,
     ExtendedPublicKey,
     Prefix,
-    //yield_now
     PublicKey,
     SecretKeyExt,
 };
@@ -277,23 +277,9 @@ impl HDWalletGen1 {
         child_number: ChildNumber,
         mut hmac: HmacSha512,
     ) -> Result<(SecretKey, ChainCode)> {
-        /*
-        println!("\n private_key: {}", hex::encode(private_key.to_bytes()));
-
-        println!("\n_deriveWithNumber {}, {}, {}, fingerprint:{}",
-            child_number,
-            child_number.is_hardened(),
-            hex::encode(private_key.get_public_key().to_bytes()),
-            hex::encode(&fingerprint)
-        );
-        */
-
         hmac.update(&child_number.to_bytes());
 
         let result = hmac.finalize().into_bytes();
-        //println!("chainCode: {}", hex::encode(self.attrs.chain_code));
-        //println!("hash: {}", hex::encode(&result));
-
         let (child_key, chain_code) = result.split_at(KEY_SIZE);
 
         // We should technically loop here if a `secret_key` is zero or overflows
@@ -377,33 +363,3 @@ impl Debug for HDWalletGen1 {
     }
 }
 
-/*
-/// Write a Base58-encoded key to the provided buffer, returning a `&str`
-/// containing the serialized data.
-///
-/// Note that this type also impls [`Display`] and therefore you can
-/// obtain an owned string by calling `to_string()`.
-pub fn write_base58<'a>(key:&ExtendedKey, buffer: &'a mut [u8; ExtendedKey::MAX_BASE58_SIZE]) -> Result<&'a str> {
-    let mut bytes = [0u8; ExtendedKey::BYTE_SIZE]; // with 4-byte checksum
-    bytes[..4].copy_from_slice(&key.prefix.to_bytes());
-    bytes[4] = key.attrs.depth;
-    bytes[5..9].copy_from_slice(&key.attrs.parent_fingerprint);
-    bytes[9..13].copy_from_slice(&key.attrs.child_number.to_bytes());
-    bytes[13..45].copy_from_slice(&key.attrs.chain_code);
-    bytes[45..78].copy_from_slice(&key.key_bytes);
-
-    println!("<Buffer {}>", hex::encode(key.prefix.to_bytes()));
-    println!("<Buffer {}>", hex::encode([key.attrs.depth]));
-    println!("<Buffer {}>", hex::encode(key.attrs.parent_fingerprint));
-    println!("<Buffer {}>", hex::encode(key.attrs.child_number.to_bytes()));
-    println!("<Buffer {}>", hex::encode(key.attrs.chain_code));
-    println!("<Buffer {}>", hex::encode(key.key_bytes));
-
-    println!("write_base58:{}", hex::encode(bytes));
-
-    let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
-    bytes.zeroize();
-
-    std::str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
-}
-*/
