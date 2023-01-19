@@ -14,7 +14,7 @@ impl ToString for AddressType {
 }
 
 impl AddressType {
-    pub fn index(&self) -> i8 {
+    pub fn index(&self) -> u32 {
         match self {
             Self::Receive => 0,
             Self::Change => 1,
