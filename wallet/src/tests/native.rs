@@ -1,5 +1,5 @@
-use crate::*;
 use crate::tests::*;
+use crate::*;
 
 /*
 //#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
@@ -13,7 +13,7 @@ pub async fn _test_addresses() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 pub async fn _test_wallet_init()->Result<()>{
-    
+
     let _result = _test_wallet_init_impl().await;
     log_trace!("init result {:?}", _result);
     println!("========================== init end ==========================> ");
@@ -22,7 +22,7 @@ pub async fn _test_wallet_init()->Result<()>{
 */
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-pub async fn _start_tests()->Result<()>{
+pub async fn _start_tests() -> Result<()> {
     let _result = _start_tests_impl().await;
     Ok(())
 }

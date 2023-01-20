@@ -387,33 +387,3 @@ impl Debug for HDWalletGen0 {
     }
 }
 
-/*
-/// Write a Base58-encoded key to the provided buffer, returning a `&str`
-/// containing the serialized data.
-///
-/// Note that this type also impls [`Display`] and therefore you can
-/// obtain an owned string by calling `to_string()`.
-pub fn write_base58<'a>(key:&ExtendedKey, buffer: &'a mut [u8; ExtendedKey::MAX_BASE58_SIZE]) -> Result<&'a str> {
-    let mut bytes = [0u8; ExtendedKey::BYTE_SIZE]; // with 4-byte checksum
-    bytes[..4].copy_from_slice(&key.prefix.to_bytes());
-    bytes[4] = key.attrs.depth;
-    bytes[5..9].copy_from_slice(&key.attrs.parent_fingerprint);
-    bytes[9..13].copy_from_slice(&key.attrs.child_number.to_bytes());
-    bytes[13..45].copy_from_slice(&key.attrs.chain_code);
-    bytes[45..78].copy_from_slice(&key.key_bytes);
-
-    println!("<Buffer {}>", hex::encode(key.prefix.to_bytes()));
-    println!("<Buffer {}>", hex::encode([key.attrs.depth]));
-    println!("<Buffer {}>", hex::encode(key.attrs.parent_fingerprint));
-    println!("<Buffer {}>", hex::encode(key.attrs.child_number.to_bytes()));
-    println!("<Buffer {}>", hex::encode(key.attrs.chain_code));
-    println!("<Buffer {}>", hex::encode(key.key_bytes));
-
-    println!("write_base58:{}", hex::encode(bytes));
-
-    let base58_len = bs58::encode(&bytes).with_check().into(buffer.as_mut())?;
-    bytes.zeroize();
-
-    std::str::from_utf8(&buffer[..base58_len]).map_err(|_| Error::Base58)
-}
-*/

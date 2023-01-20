@@ -97,7 +97,7 @@ where
 
     pub fn from_public_key(public_key:K, attrs: &ExtendedKeyAttrs)->Self{
         ExtendedPublicKey {
-            public_key: public_key,
+            public_key,
             attrs: attrs.clone(),
         }
     }

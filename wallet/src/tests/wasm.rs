@@ -1,8 +1,8 @@
-use crate::*;
 use crate::tests::*;
+use crate::*;
 
 #[wasm_bindgen]
-pub async fn start_tests(){
+pub async fn start_tests() {
     let r = _start_tests_impl().await;
     log_trace!("start_tests: result {:?}", r);
 }

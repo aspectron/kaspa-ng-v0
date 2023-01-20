@@ -151,7 +151,7 @@ async fn _test_addresses_impl(_use_yield: bool) -> Result<()> {
     Ok(())
 }
 
-async fn _test_wallet_init_impl()-> Result<()>{
+async fn _test_wallet_init_impl() -> Result<()> {
     start_heading("wallet init");
 
     let manager = WalletManager::new();
@@ -159,7 +159,9 @@ async fn _test_wallet_init_impl()-> Result<()>{
     let wallet_str = "";
     let password = "";
 
-    let wallet = manager.open_wallet(wallet_str, password, WalletGeneration::Gen0).await?;
+    let wallet = manager
+        .open_wallet(wallet_str, password, WalletGeneration::Gen0)
+        .await?;
 
     wallet.sync().await?;
     let address = wallet.receive_address().await?;
@@ -169,19 +171,24 @@ async fn _test_wallet_init_impl()-> Result<()>{
     Ok(())
 }
 
-pub async fn _start_tests_impl()->Result<()>{
+pub async fn _start_tests_impl() -> Result<()> {
     _test_addresses_impl(true).await?;
     _test_wallet_init_impl().await?;
     Ok(())
 }
 
-fn start_heading(heading: &str){
-    log_trace!("\x1b[32m========================== {} ==========================\x1b[0m\n", heading);
+fn start_heading(heading: &str) {
+    log_trace!(
+        "\x1b[32m========================== {} ==========================\x1b[0m\n",
+        heading
+    );
 }
-fn end_heading(heading: &str){
-    log_trace!("========================== {} ==========================\n", heading);
+fn end_heading(heading: &str) {
+    log_trace!(
+        "========================== {} ==========================\n",
+        heading
+    );
 }
-
 
 #[cfg(not(target_arch = "wasm32"))]
 mod native;

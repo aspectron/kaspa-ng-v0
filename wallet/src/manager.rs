@@ -1,15 +1,11 @@
 use crate::*;
 
-pub struct WalletManager{
+pub struct WalletManager {}
 
-}
-
-impl WalletManager{
+impl WalletManager {
     /// WalletManager Constructor
-    pub fn new()->Self{
-        Self {
-
-        }
+    pub fn new() -> Self {
+        Self {}
     }
 
     /// Open wallet from mnemonic
@@ -17,15 +13,11 @@ impl WalletManager{
         &self,
         encrypted_wallet: &str,
         password: &str,
-        wallet_generation: WalletGeneration
-    )->Result<Arc<dyn WalletWrapper>>{
+        wallet_generation: WalletGeneration,
+    ) -> Result<Arc<dyn WalletWrapper>> {
         let wallet: Arc<dyn WalletWrapper> = match wallet_generation {
-            WalletGeneration::Gen0=>{
-                WalletGen0::open_wallet(encrypted_wallet, password).await?
-            }
-            WalletGeneration::Gen1=>{
-                WalletGen1::open_wallet(encrypted_wallet, password).await?
-            }
+            WalletGeneration::Gen0 => WalletGen0::open_wallet(encrypted_wallet, password).await?,
+            WalletGeneration::Gen1 => WalletGen1::open_wallet(encrypted_wallet, password).await?,
         };
 
         Ok(wallet)
