@@ -154,6 +154,8 @@ async fn _test_addresses_impl(_use_yield: bool) -> Result<()> {
 async fn _test_wallet_init_impl() -> Result<()> {
     start_heading("wallet init");
 
+    WalletStore::get_saved();
+
     let manager = WalletManager::new();
 
     let wallet_str = "";
@@ -185,7 +187,7 @@ fn start_heading(heading: &str) {
 }
 fn end_heading(heading: &str) {
     log_trace!(
-        "========================== {} ==========================\n",
+        "========================== {} : END ==========================\n",
         heading
     );
 }

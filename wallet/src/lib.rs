@@ -8,10 +8,13 @@ pub use workflow_log::log_trace;
 mod manager;
 mod wallets;
 mod wrapper;
+mod storage;
+
 pub enum WalletGeneration {
     Gen0,
     Gen1,
 }
+pub use storage::WalletStore;
 pub use manager::WalletManager;
 pub use wallets::*;
 pub use wrapper::WalletWrapper;

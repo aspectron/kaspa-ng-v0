@@ -1,3 +1,7 @@
+#![allow(dead_code)]
+
+use crate::*;
+use workflow_core::runtime::Runtime;
 
 pub struct WalletData{
     /// Data version
@@ -24,8 +28,8 @@ pub struct Wallet{
     index: u64,
     /// Required Signature 
     required_signature: WalletSignatureCount,
-    /// Wallet type, e.g. KDX/Core
-    wallet_type: WalletType,
+    /// Wallet type, e.g. Gen0 = KDX/PWA, Gen1 = Core
+    wallet_gen: WalletGeneration,
     /// Extended Public key to generate addresses
     xpub: Vec<u8>
 }
@@ -35,7 +39,22 @@ pub enum WalletSignatureCount{
     Multisig(u16)
 }
 
-pub enum WalletType{
-    KDX,
-    Core
+
+pub struct WalletStore{
+
+}
+
+
+impl WalletStore{
+    pub fn get_saved()->Option<String>{
+        let runtime = Runtime::get();
+        log_trace!("runtime:  {}", runtime);
+        log_trace!("is_nw:  {}", Runtime::is_nw());
+        log_trace!("is_node:  {}", Runtime::is_node());
+        log_trace!("is_web:  {}", Runtime::is_web());
+        log_trace!("is_native:  {}", Runtime::is_native());
+        log_trace!("is_solana:  {}", Runtime::is_solana());
+        log_trace!("is_wasm:  {}", Runtime::is_wasm());
+        None
+    }
 }

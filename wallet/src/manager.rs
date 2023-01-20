@@ -7,6 +7,7 @@ impl WalletManager {
     pub fn new() -> Self {
         Self {}
     }
+    
 
     /// Open wallet from mnemonic
     pub async fn open_wallet(
