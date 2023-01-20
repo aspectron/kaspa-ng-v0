@@ -6,7 +6,7 @@ license = "AGPL-3+"
 edition = "2018"
 
 [features]
-test = []
+test = ["kaspa-ng-wallet/test"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]

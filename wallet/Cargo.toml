@@ -62,7 +62,8 @@ version="*"
 #optional = true
 #default-features = false
 
-#[features]
+[features]
+test=[]
 #alloc = ["zeroize/alloc"]
 #default = ["alloc"]
 #std = ["alloc"]

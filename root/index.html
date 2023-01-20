@@ -35,15 +35,14 @@
 		(async()=>{
 			let kaspa = await import('../kaspa/kaspa.js');
 			const wasm = await kaspa.default('/kaspa/kaspa_bg.wasm');
-			//console.log("wasm", wasm, kaspa)
+			console.log("wasm", wasm, kaspa)
 			
 			kaspa.init_console_panic_hook();
 			//kaspa.show_panic_hook_logs();
 			kaspa.initialize(kaspa, {});
 			console.log("init done...");
 			setTimeout(async () => {
-				console.log("testing addresses...");
-				await kaspa.test_addresses();
+				await kaspa.start_tests();
 			}, 1);
 
 			
