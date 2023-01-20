@@ -1,5 +1,4 @@
-use crate::WalletWrapper;
-use std::sync::Arc;
+use crate::*;
 
 pub struct WalletManager{
 
@@ -14,11 +13,21 @@ impl WalletManager{
     }
 
     /// Open wallet from mnemonic
-    pub fn open_wallet_from_mnemonic(
+    pub async fn open_wallet(
         &self,
-        mnemonic: String,
-        password: String
-    )->Arc<dyn WalletWrapper>{
+        encrypted_wallet: &str,
+        password: &str,
+        wallet_generation: WalletGeneration
+    )->Result<Arc<dyn WalletWrapper>>{
+        let wallet: Arc<dyn WalletWrapper> = match wallet_generation {
+            WalletGeneration::Gen0=>{
+                WalletGen0::open_wallet(encrypted_wallet, password).await?
+            }
+            WalletGeneration::Gen1=>{
+                WalletGen1::open_wallet(encrypted_wallet, password).await?
+            }
+        };
 
+        Ok(wallet)
     }
 }

@@ -11,6 +11,7 @@ wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.33"
 hex = "*"
 addresses = {path="../../rusty-kaspa/crypto/addresses"}
+consensus-core = {path="../../rusty-kaspa/consensus/core"}
 kaspa-bip32 = {path="../bip32"}
 
 #[dependencies.bs58]

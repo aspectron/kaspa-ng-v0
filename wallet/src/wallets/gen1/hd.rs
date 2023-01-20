@@ -40,7 +40,7 @@ pub struct HDWalletInner {
 
 impl HDWalletInner {
     pub async fn derive_address(&self, index: u32) -> Result<Address> {
-        let (key, _chain_code) = HDWalletGen2::derive_public_key_child(
+        let (key, _chain_code) = HDWalletGen1::derive_public_key_child(
             &self.public_key,
             index,
             self.hmac.clone(),
@@ -113,7 +113,7 @@ impl From<&HDWalletInner> for ExtendedPublicKey<secp256k1::PublicKey> {
 }
 
 #[derive(Clone)]
-pub struct HDWalletGen2 {
+pub struct HDWalletGen1 {
     /// Encrypted private key
     //encrypted_private_key: Vec<u8>,
 
@@ -127,7 +127,7 @@ pub struct HDWalletGen2 {
     change_wallet: HDWalletInner,
 }
 
-impl HDWalletGen2 {
+impl HDWalletGen1 {
     /// build wallet from root/master private key
     pub async fn from_master_xprv(xprv: &str, is_multisig: bool, account_index: u64) -> Result<Self> {
         let xprv_key = ExtendedPrivateKey::<SecretKey>::from_str(xprv)?;
@@ -394,7 +394,7 @@ impl HDWalletGen2 {
     }
 }
 
-impl Debug for HDWalletGen2 {
+impl Debug for HDWalletGen1 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("HDWallet")
             .field("depth", &self.attrs().depth)

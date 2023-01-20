@@ -2,9 +2,22 @@ use kaspa_bip32::*;
 use wasm_bindgen::prelude::*;
 use workflow_core::task::yield_executor;
 use workflow_log::log_trace;
+pub use addresses::{Address, AddressError, Prefix as AddressPrefix};
+pub use std::sync::Arc;
 
 mod wallets;
+mod manager;
+mod wrapper;
+pub enum WalletGeneration{
+    Gen0,
+    Gen1
+}
+pub use manager::WalletManager;
+pub use wrapper::WalletWrapper;
 pub use wallets::*;
+pub fn dummy_address()->Address{
+    Address { prefix: AddressPrefix::Mainnet, payload: vec![0u8; 32], version: 0u8 }
+}
 
 async fn test(_use_yield: bool) -> Result<()> {
     // init_yield();
@@ -82,7 +95,7 @@ async fn test(_use_yield: bool) -> Result<()> {
     //let xpub = child_xpub.to_string(Prefix::XPUB);
     //let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57"; //xpriv.as_str();
 
-    let hd_wallet = HDWalletGen2::from_master_xprv(_xpriv_str, false, 0).await?;
+    let hd_wallet = HDWalletGen1::from_master_xprv(_xpriv_str, false, 0).await?;
     //let xpublic_key = "kpub2K5JP5BKvfwttwv3aCdLAiF26nZugo8HA5SNv51hHCRRf5fWx8qPYjNxRBNc8tracpahrC3HpqK5VoaTS9hrT1q7LuzQL4LchptgsHhsThv";
     //let hd_wallet = HDWalletGen2::from_extended_public_key_str(xpublic_key).await?;
     //let xpub = hd_wallet.public_key().to_string(Some(Prefix::KPUB));
@@ -155,13 +168,6 @@ async fn test(_use_yield: bool) -> Result<()> {
     Ok(())
 }
 
-/*
-#[async_std::main]
-async fn main() {
-    let result = test().await;
-    println!("result: {:?}", result);
-}
-*/
 
 #[wasm_bindgen]
 pub async fn test_addresses() {
@@ -174,15 +180,4 @@ pub async fn test_addresses() {
 
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(test)]
-mod tests {
-
-    use super::*;
-
-    #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-    pub async fn addresses() {
-        let now = workflow_core::time::Instant::now();
-        let _result = test(true).await;
-        log_trace!("address created in {}s", now.elapsed().as_secs());
-        //log_trace!("result: {:?}", result);
-    }
-}
+mod tests;
