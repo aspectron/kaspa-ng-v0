@@ -19,15 +19,6 @@ pub fn dummy_address()->Address{
     Address { prefix: AddressPrefix::Mainnet, payload: vec![0u8; 32], version: 0u8 }
 }
 
-#[cfg(not(target_arch = "wasm32"))]
-#[cfg(test)]
+#[cfg(any(test, feature="test"))]
 mod tests;
-
-#[cfg(target_arch = "wasm32")]
-#[cfg(feature="test")]
-mod tests;
-
-#[cfg(target_arch = "wasm32")]
-#[cfg(feature="test")]
-pub use crate::tests::*;
 
