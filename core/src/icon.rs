@@ -45,13 +45,14 @@ pub enum Icon {
 impl Icon {
     pub fn element(self) -> workflow_ux::result::Result<Element> {
         let icon: workflow_ux::icon::Icon = self.into();
-        Ok(icon.element()?)
+        let el = icon.element()?;
+        Ok(el)
     }
 }
 
-impl Into<workflow_ux::icon::Icon> for Icon {
-    fn into(self) -> workflow_ux::icon::Icon {
-        let name = self.as_str().from_case(Case::Camel).to_case(Case::Kebab);
+impl From<Icon> for workflow_ux::icon::Icon {
+    fn from(val: Icon) -> Self {
+        let name = val.as_str().from_case(Case::Camel).to_case(Case::Kebab);
         workflow_ux::icon::Icon::css(name)
     }
 }

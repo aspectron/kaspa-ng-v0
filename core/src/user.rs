@@ -13,6 +13,7 @@ pub struct User {
 }
 
 impl User {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         User {
             //pending: Arc::new(AtomicBool::new(false))

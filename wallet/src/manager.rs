@@ -3,6 +3,7 @@ use crate::*;
 pub struct WalletManager {}
 
 impl WalletManager {
+    #[allow(clippy::new_without_default)]
     /// WalletManager Constructor
     pub fn new() -> Self {
         Self {}

@@ -15,7 +15,7 @@ addresses = {path="../../rusty-kaspa/crypto/addresses"}
 consensus-core = {path="../../rusty-kaspa/consensus/core"}
 kaspa-rpc-core = {path="../../rusty-kaspa/rpc/core", package="rpc-core"}
 kaspa-wrpc-client = {path="../../rusty-kaspa/rpc/wrpc/client"}
-kaspa-bip32 = {path="../bip32"}
+kaspa-bip32 = {path="../../rusty-kaspa/bip32"}
 
 #[dependencies.bs58]
 #version = "0.4"

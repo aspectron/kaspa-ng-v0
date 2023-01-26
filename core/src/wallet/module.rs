@@ -126,9 +126,11 @@ impl WalletView {
 
     fn init(self: Arc<Self>, module: Arc<Wallet>) -> Result<()> {
         let address = "kaspa:qpzfe25efgnmgr482958dfrshf3t3fpu9gryf8227w0ll3kf5tqfzrtxs2507";
-        let mut qr_options = qr::Options::default();
-        qr_options.logo_size = 20;
-        qr_options.logo = Some("/resources/images/kaspa-180x180.png".to_string());
+        let qr_options = workflow_ux::qrcode::Options{
+            logo_size: 20,
+            logo: Some("/resources/images/kaspa-180x180.png".to_string()),
+            ..Default::default()
+        };
 
         let qr_code = qr::QRCode::create(address, qr_options)?;
 

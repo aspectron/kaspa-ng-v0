@@ -387,7 +387,7 @@ impl HDWalletGen1 {
     /// Serialize this key as a self-[`Zeroizing`] `String`.
     pub fn to_string(&self) -> Zeroizing<String> {
         let key = self.extended_public_key.to_string(Some(Prefix::KPUB));
-        Zeroizing::new(key.to_string())
+        Zeroizing::new(key)
     }
 }
 

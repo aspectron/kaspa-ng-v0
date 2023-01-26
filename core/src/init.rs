@@ -1,6 +1,6 @@
 use crate::prelude::*;
 use crate::result::Result;
-use wasm_bindgen::prelude::*;
+//use wasm_bindgen::prelude::*;
 use workflow_ux::wasm::{self, init_ux, load_component};
 
 #[macro_export]

@@ -148,7 +148,7 @@ impl Application {
 
 pub fn global() -> Result<Application> {
     let clone = unsafe {
-        (&APPLICATION)
+        (APPLICATION)
             .as_ref()
             .ok_or_else(|| panic!("Application global is not registered"))
             .unwrap()

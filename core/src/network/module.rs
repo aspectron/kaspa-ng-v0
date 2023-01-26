@@ -63,9 +63,9 @@ impl Network {
         let view = match view {
             Some(view) => view,
             None => {
-                let view = NodeView::new(self.clone())?;
+                //let view = NodeView::new(self.clone())?;
                 //*self.node_view.lock()? = Some(view.clone());
-                view
+                NodeView::new(self.clone())?
             }
         };
 
