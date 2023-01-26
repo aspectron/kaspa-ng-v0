@@ -1,5 +1,5 @@
-use crate::PublicKey;
 use crate::types::*;
+use crate::PublicKey;
 use crate::Result;
 pub use secp256k1_ffi::SecretKey;
 use secp256k1_ffi::{scalar::Scalar, Secp256k1, SignOnly};

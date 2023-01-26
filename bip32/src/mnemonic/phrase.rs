@@ -102,7 +102,7 @@ impl Mnemonic {
         // Truncate to get rid of the byte containing the checksum
         entropy.truncate(KEY_SIZE);
 
-        let expected_checksum = Sha256::digest(&entropy).as_slice()[0];
+        let expected_checksum = Sha256::digest(&*entropy).as_slice()[0];
 
         if actual_checksum != expected_checksum {
             return Err(Error::Bip39);

@@ -6,16 +6,16 @@ pub use workflow_core::task::yield_executor;
 pub use workflow_log::log_trace;
 
 mod manager;
+mod storage;
 mod wallets;
 mod wrapper;
-mod storage;
 
 pub enum WalletGeneration {
     Gen0,
     Gen1,
 }
-pub use storage::WalletStore;
 pub use manager::WalletManager;
+pub use storage::WalletStore;
 pub use wallets::*;
 pub use wrapper::WalletWrapper;
 pub fn dummy_address() -> Address {

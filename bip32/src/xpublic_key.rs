@@ -95,7 +95,7 @@ where
         self.to_extended_key(prefix).to_string()
     }
 
-    pub fn from_public_key(public_key:K, attrs: &ExtendedKeyAttrs)->Self{
+    pub fn from_public_key(public_key: K, attrs: &ExtendedKeyAttrs) -> Self {
         ExtendedPublicKey {
             public_key,
             attrs: attrs.clone(),
@@ -114,7 +114,6 @@ where
         }
     }
 }
-
 
 impl<K> FromStr for ExtendedPublicKey<K>
 where

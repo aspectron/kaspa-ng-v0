@@ -53,4 +53,3 @@ impl SecretKeyExt for secp256k1_ffi::SecretKey {
         Zeroizing::new(key.to_string())
     }
 }
-

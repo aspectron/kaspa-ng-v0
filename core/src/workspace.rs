@@ -1,16 +1,16 @@
-
 use crate::menu::AppMenu;
 use workflow_ux::prelude::*;
 use workflow_ux::result::Result;
 
-
 pub fn workspace() -> std::sync::Arc<Workspace> {
-    crate::application::global().expect("Missing global application object").workspace()
+    crate::application::global()
+        .expect("Missing global application object")
+        .workspace()
 }
 
 pub struct Workspace {
-    inner : workspace::Workspace,
-    menu: Arc<AppMenu>
+    inner: workspace::Workspace,
+    menu: Arc<AppMenu>,
 }
 
 impl Workspace {
@@ -21,12 +21,12 @@ impl Workspace {
             "#workspace-status",
             "#workspace-main",
             "#workspace-sidebar",
-            menu.inner()
+            menu.inner(),
         )?;
 
         let workspace = Workspace {
             inner,
-            menu: Arc::new(menu)
+            menu: Arc::new(menu),
         };
 
         Ok(workspace)
@@ -51,5 +51,4 @@ impl Workspace {
     pub fn sidebar(&self) -> Arc<ContainerStack> {
         self.inner.sidebar()
     }
-
 }

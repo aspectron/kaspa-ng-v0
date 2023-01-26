@@ -1,12 +1,11 @@
 //use std::sync::atomic::{AtomicBool, Ordering};
-use kaspa_core::result::Result;
 use kaspa_core::prelude::*;
+use kaspa_core::result::Result;
 //use crate::profile::wallet::{WalletConnectHandler, wallet_adaptor};
 //use workflow_ux::local_storage;
 //use serde::{Serialize, Deserialize};
 //use crate::wallet::module::Wallet as WalletModule;
 //use workflow_ux::dialog::Dialog;
-
 
 #[derive(Clone)]
 pub struct User {
@@ -25,17 +24,14 @@ impl User {
     }
 
     pub fn store(&self) -> Result<()> {
-        
         Ok(())
     }
 
     pub async fn restore(&self) -> Result<()> {
-        
         Ok(())
     }
 
     pub fn reset(&self) -> Result<()> {
-        
         Ok(())
     }
 
@@ -43,12 +39,9 @@ impl User {
         Ok(true)
     }
 
-    pub async fn block(&self, _module : Arc<dyn ModuleInterface>) -> Result<bool> {
- 
+    pub async fn block(&self, _module: Arc<dyn ModuleInterface>) -> Result<bool> {
         Ok(true)
-
     }
-
 }
 
 /*

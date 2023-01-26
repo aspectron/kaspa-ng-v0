@@ -4,20 +4,20 @@ use workflow_http::error::Error;
 #[cfg(not(target_arch = "wasm32"))]
 #[async_std::main]
 async fn main() -> Result<(), Error> {
-    use std::collections::HashMap;
-    use workflow_http::{BasicAuthenticator, stores, Router};
-    use std::collections::BTreeMap;
-    use std::path::Path;
     use duct::cmd;
+    use std::collections::BTreeMap;
+    use std::collections::HashMap;
+    use std::path::Path;
+    use workflow_http::{stores, BasicAuthenticator, Router};
 
     // ~~~
 
-    if Path::new("./node_modules").exists() != true {
+    if !Path::new("./node_modules").exists() {
         println!("\n\nnode_modules folder is absent... running npm install...\n");
-        cmd!("npm","install").run()?;
+        cmd!("npm", "install").run()?;
     }
 
-    if Path::new("./root/kaspa").exists() != true {
+    if !Path::new("./root/kaspa").exists() {
         println!("\n\nkaspa wasm folder is absent... running wasm-pack...\n");
         cmd!(
             "wasm-pack",
@@ -28,7 +28,8 @@ async fn main() -> Result<(), Error> {
             "kaspa",
             "--out-dir",
             "../root/kaspa",
-            "--features","test"
+            "--features",
+            "test"
         )
         .dir("wasm")
         .run()?;
@@ -52,14 +53,9 @@ async fn main() -> Result<(), Error> {
     source_map.insert("node_modules", "/node_modules");
     let overrides = BTreeMap::from([]);
 
-    let router = Router::new_with_overrides(
-        cwd.clone(),
-        mount_map,
-        source_map,
-        overrides
-    );
+    let router = Router::new_with_overrides(cwd.clone(), mount_map, source_map, overrides);
 
-    let tide_secret :&[u8] = &(0..64).map(|_| { rand::random::<u8>() }).collect::<Vec<u8>>();
+    let tide_secret: &[u8] = &(0..64).map(|_| rand::random::<u8>()).collect::<Vec<u8>>();
 
     let mut app = tide::new();
     app.with(tide::log::LogMiddleware::new());
@@ -73,13 +69,12 @@ async fn main() -> Result<(), Error> {
 
     app.with(tide::sessions::SessionMiddleware::new(
         tide::sessions::MemoryStore::new(),
-        tide_secret
-        /*std::env::var("TIDE_SECRET")
-            .expect(
-                "Please provide a TIDE_SECRET value of at \
-                      least 32 bytes in order to run this example",
-            )
-            .as_bytes(),*/
+        tide_secret, /*std::env::var("TIDE_SECRET")
+                     .expect(
+                         "Please provide a TIDE_SECRET value of at \
+                               least 32 bytes in order to run this example",
+                     )
+                     .as_bytes(),*/
     ));
 
     app.with(tide::utils::Before(
@@ -103,13 +98,12 @@ async fn main() -> Result<(), Error> {
     app.at("/").serve_dir("root/")?;
     app.at("/node_modules").serve_dir("node_modules/")?;
 
-    
     app.listen("0.0.0.0:8080").await?;
 
     Ok(())
 }
 
 #[cfg(target_arch = "wasm32")]
-fn main() -> std::result::Result<(),String> {
+fn main() -> std::result::Result<(), String> {
     panic!("wasm32 target is not supported");
 }

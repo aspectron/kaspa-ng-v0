@@ -167,7 +167,8 @@ async fn _test_wallet_init_impl() -> Result<()> {
 
     wallet.sync().await?;
     let address = wallet.receive_address().await?;
-    log_trace!("receive_address: {}", address);
+    let address_str: String = address.into();
+    log_trace!("receive_address: {}", address_str);
 
     end_heading("wallet init");
     Ok(())

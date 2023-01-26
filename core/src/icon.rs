@@ -1,9 +1,8 @@
+use convert_case::{Case, Casing};
 use web_sys::Element;
 use workflow_core::enums::*;
-use convert_case::{Case, Casing};
 
-#[describe_enum]
-#[derive(Debug)]
+#[derive(Debug, Describe)]
 pub enum Icon {
     Default,
     Work,
@@ -40,11 +39,11 @@ pub enum Icon {
     News,
     Close,
     Cross,
-    Wip
+    Wip,
 }
 
-impl Icon{
-    pub fn element(self)->workflow_ux::result::Result<Element>{
+impl Icon {
+    pub fn element(self) -> workflow_ux::result::Result<Element> {
         let icon: workflow_ux::icon::Icon = self.into();
         Ok(icon.element()?)
     }
@@ -52,16 +51,14 @@ impl Icon{
 
 impl Into<workflow_ux::icon::Icon> for Icon {
     fn into(self) -> workflow_ux::icon::Icon {
-        let name = self.as_str()
-            .from_case(Case::Camel)
-            .to_case(Case::Kebab);
+        let name = self.as_str().from_case(Case::Camel).to_case(Case::Kebab);
         workflow_ux::icon::Icon::css(name)
     }
 }
 
-impl From<Icon> for String{
-    fn from(icon:Icon) -> Self {
-        let icon:workflow_ux::icon::Icon = icon.into();
+impl From<Icon> for String {
+    fn from(icon: Icon) -> Self {
+        let icon: workflow_ux::icon::Icon = icon.into();
         icon.to_string()
     }
 }

@@ -1,20 +1,18 @@
-use wasm_bindgen::prelude::*;
 use thiserror::Error;
+use wasm_bindgen::prelude::*;
 
 use workflow_ux::error::Error as UxError;
 //use workflow_terminal::error::Error as TerminalError;
-    
 
 #[macro_export]
 macro_rules! error {
     ($($t:tt)*) => ( workflow_ux::error::Error::String(format_args!($($t)*).to_string()) )
 }
-pub use error; 
+pub use error;
 
 // #[allow(non_camel_case_types)]
 #[derive(Debug, Error)]
 pub enum Error {
-
     #[cfg(not(target_os = "solana"))]
     #[error("{0}")]
     String(String),
@@ -22,7 +20,7 @@ pub enum Error {
     #[cfg(not(target_os = "solana"))]
     #[error("{0:#?}")]
     JsValue(JsValue),
-    
+
     #[cfg(not(target_os = "solana"))]
     #[error("{0:#?}")]
     UxError(#[from] UxError),
@@ -40,20 +38,19 @@ pub enum Error {
     IoError(#[from] std::io::Error),
 }
 
-
 impl From<Error> for UxError {
-    fn from(err:Error) -> UxError {
+    fn from(err: Error) -> UxError {
         UxError::String(err.to_string())
-    }    
-}    
+    }
+}
 
 impl From<&str> for Error {
-    fn from(err : &str) -> Self {
+    fn from(err: &str) -> Self {
         Self::String(err.to_string())
     }
 }
 impl From<String> for Error {
-    fn from(err : String) -> Self {
+    fn from(err: String) -> Self {
         Self::String(err)
     }
 }

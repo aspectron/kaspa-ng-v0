@@ -386,4 +386,3 @@ impl Debug for HDWalletGen0 {
             .finish()
     }
 }
-

@@ -44,6 +44,7 @@
 			kaspa.init_console_panic_hook();
 			//kaspa.show_panic_hook_logs();
 			kaspa.initialize(kaspa, {});
+			
 			console.log("init done...");
 			setTimeout(async () => {
 				await kaspa.start_tests();
