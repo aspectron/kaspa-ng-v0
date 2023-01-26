@@ -1,5 +1,5 @@
 use crate::*;
-use workflow_core::async_trait;
+use workflow_async_trait::async_trait;
 
 pub struct WalletGen1 {}
 

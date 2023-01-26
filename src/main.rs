@@ -13,8 +13,8 @@ async fn main() -> Result<(), Error> {
     // ~~~
 
     if !Path::new("./node_modules").exists() {
-        println!("\n\nnode_modules folder is absent... running npm install...\n");
-        cmd!("npm", "install").run()?;
+        //println!("\n\nnode_modules folder is absent... running npm install...\n");
+        //cmd!("npm", "install").run()?;
     }
 
     if !Path::new("./root/kaspa").exists() {
@@ -40,17 +40,17 @@ async fn main() -> Result<(), Error> {
     tide::log::start();
 
     let cwd = std::env::current_dir().unwrap();
-    let mut mount_map = HashMap::new();
-    mount_map.insert("flow-ux", "/flow-ux");
-    mount_map.insert("lib", "/lib");
-    mount_map.insert("workflow", "/workflow");
+    let mount_map = HashMap::new();
+    //mount_map.insert("flow-ux", "/flow-ux");
+    //mount_map.insert("lib", "/lib");
+    //mount_map.insert("workflow", "/workflow");
     //mount_map.insert("solflare-wallet-web", "/node_modules/@solflare-wallet/sdk/lib/esm/adapters/web/");
-    mount_map.insert("node_modules", "/node_modules");
-    let mut source_map = HashMap::new();
-    source_map.insert("lib", "/root/lib");
-    source_map.insert("workflow", "/root/workflow");
+    //mount_map.insert("node_modules", "/node_modules");
+    let source_map = HashMap::new();
+    //source_map.insert("lib", "/root/lib");
+    //source_map.insert("workflow", "/root/workflow");
     //source_map.insert("solflare-wallet-web", "/node_modules/@solflare-wallet/sdk/lib/esm/adapters/");
-    source_map.insert("node_modules", "/node_modules");
+    //source_map.insert("node_modules", "/node_modules");
     let overrides = BTreeMap::from([]);
 
     let router = Router::new_with_overrides(cwd.clone(), mount_map, source_map, overrides);
@@ -96,7 +96,7 @@ async fn main() -> Result<(), Error> {
 
     router.init(&mut app);
     app.at("/").serve_dir("root/")?;
-    app.at("/node_modules").serve_dir("node_modules/")?;
+    //app.at("/node_modules").serve_dir("node_modules/")?;
 
     app.listen("0.0.0.0:8080").await?;
 
