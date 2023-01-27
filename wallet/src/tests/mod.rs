@@ -19,7 +19,7 @@ async fn _test_addresses_impl(_use_yield: bool) -> Result<()> {
 
     //println!("seed: {}", hex::encode(seed.as_bytes()));
 
-    let xprv = ExtendedPrivateKey::<secp256k1_ffi::SecretKey>::new(seed)?;
+    let xprv = ExtendedPrivateKey::<secp256k1::SecretKey>::new(seed)?;
 
     //println!("private_key: {}", hex::encode(xprv.private_key().to_bytes()));
     let xpriv_str = xprv.to_string(Prefix::KPRV);
