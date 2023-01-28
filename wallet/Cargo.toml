@@ -15,58 +15,13 @@ addresses = {path="../../rusty-kaspa/crypto/addresses"}
 consensus-core = {path="../../rusty-kaspa/consensus/core"}
 kaspa-rpc-core = {path="../../rusty-kaspa/rpc/core", package="rpc-core"}
 kaspa-wrpc-client = {path="../../rusty-kaspa/rpc/wrpc/client"}
-kaspa-bip32 = {path="../../rusty-kaspa/bip32"}
+kaspa-bip32 = {path="../../rusty-kaspa/wallet/bip32"}
+kaspa-wallet-core = {path="../../rusty-kaspa/wallet/core"}
 
-#[dependencies.bs58]
-#version = "0.4"
-#features = ["check"]
-#default-features = false
-
-[dependencies.hmac]
-version = "0.12"
-default-features = false
-
-[dependencies.secp256k1]
-version = "0.24"
-features=["global-context", "rand-std"]
-
-[dependencies.sha2]
-version = "0.10"
-default-features = false
-
-[dependencies.zeroize]
-version = "1"
-default-features = false
-features=["alloc"]
-
-[dependencies.ripemd]
-version = "0.1"
-default-features = false
-
-#[dependencies.subtle]
-#version = "2"
-#default-features = false
-
-#[dependencies.js-sys]
-#version="*"
-
-#[dependencies.async-std]
-#version = "1.12.0"
-#features = ["attributes"]
 
 [dependencies.tokio]
 version="*"
 
-#[dependencies.once_cell]
-#version = "1"
-
-#[dependencies.pbkdf2]
-#version = "0.11"
-#optional = true
-#default-features = false
 
 [features]
 test=[]
-#alloc = ["zeroize/alloc"]
-#default = ["alloc"]
-#std = ["alloc"]
