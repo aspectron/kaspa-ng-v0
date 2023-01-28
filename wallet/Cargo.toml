@@ -4,23 +4,21 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-#rand_core= { version = "0.6", features = ["std"] }
-workflow-log = {path="../../workflow-rs/log", features=[]}
-workflow-core = {path="../../workflow-rs/core" }
-workflow-async-trait = {path="../../workflow-async-trait"}
-wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
-wasm-bindgen-futures = "0.4.33"
-hex = "*"
-addresses = {path="../../rusty-kaspa/crypto/addresses"}
-consensus-core = {path="../../rusty-kaspa/consensus/core"}
-kaspa-rpc-core = {path="../../rusty-kaspa/rpc/core", package="rpc-core"}
-kaspa-wrpc-client = {path="../../rusty-kaspa/rpc/wrpc/client"}
-kaspa-bip32 = {path="../../rusty-kaspa/wallet/bip32"}
-kaspa-wallet-core = {path="../../rusty-kaspa/wallet/core"}
+workflow-log.workspace = true
+workflow-core.workspace = true
+workflow-async-trait.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+#hex = "*"
+addresses.workspace = true
+consensus-core.workspace = true
+kaspa-rpc-core.workspace = true
+kaspa-wrpc-client.workspace = true
+kaspa-bip32.workspace = true
+kaspa-wallet-core.workspace = true
 
 
-[dependencies.tokio]
-version="*"
+tokio="*"
 
 
 [features]

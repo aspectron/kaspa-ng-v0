@@ -6,7 +6,7 @@ use workflow_core::channel::Sender;
 use workflow_ux::controls::prelude::*;
 use workflow_ux::events::*;
 use workflow_ux::result::Result;
-use workflow_wasm::options::OptionsExt;
+use workflow_wasm::options::OptionsTrait;
 
 #[wasm_bindgen]
 extern "C" {
@@ -15,7 +15,7 @@ extern "C" {
     pub type BadgeData;
 }
 
-impl workflow_wasm::options::OptionsExt for BadgeData {}
+impl workflow_wasm::options::OptionsTrait for BadgeData {}
 
 impl From<(Date, u32)> for BadgeData {
     fn from(value: (Date, u32)) -> Self {

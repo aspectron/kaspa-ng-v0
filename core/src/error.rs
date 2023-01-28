@@ -2,7 +2,9 @@ use thiserror::Error;
 use wasm_bindgen::prelude::*;
 
 use workflow_ux::error::Error as UxError;
-//use workflow_terminal::error::Error as TerminalError;
+use workflow_terminal::error::Error as TerminalError;
+use kaspa_wallet_cli::error::Error as CLIError;
+use std::sync::PoisonError;
 
 #[macro_export]
 macro_rules! error {
@@ -32,10 +34,16 @@ pub enum Error {
     ChannelReceiveError(String),
 
     #[error("Terminal error: {0}")]
-    TerminalError(String),
+    TerminalError(#[from] TerminalError),
+
+    #[error("CLI error: {0}")]
+    CLIError(#[from] CLIError),
 
     #[error("I/O error: {0}")]
     IoError(#[from] std::io::Error),
+
+    #[error("PoisonError error: {0}")]
+    PoisonError(String),
 }
 
 impl From<Error> for UxError {
@@ -64,6 +72,12 @@ impl From<JsValue> for Error {
 impl From<Error> for JsValue {
     fn from(error: Error) -> JsValue {
         JsValue::from(format!("{:?}", error))
+    }
+}
+
+impl<T> From<PoisonError<T>> for Error {
+    fn from(error: PoisonError<T>) -> Error {
+        Error::PoisonError(format!("{:?}", error))
     }
 }
 

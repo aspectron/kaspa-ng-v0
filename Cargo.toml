@@ -20,11 +20,20 @@ tide = "0.16.0"
 [workspace.dependencies]
 workflow-http = {path = "../workflow-http"}
 workflow-ux   = {path = "../workflow-ux"}
-workflow-log  = {path = "../workflow-rs/log"}
+workflow-log  = {path = "../workflow-rs/log", features=[]}
 workflow-core = {path = "../workflow-rs/core"}
 workflow-html = {path = "../workflow-rs/html"}
 workflow-wasm = {path = "../workflow-rs/wasm"}
+workflow-terminal = {path = "../workflow-rs/terminal"}
 workflow-async-trait = {path = "../workflow-async-trait"}
+
+addresses = {path="../rusty-kaspa/crypto/addresses"}
+consensus-core = {path="../rusty-kaspa/consensus/core"}
+kaspa-rpc-core = {path="../rusty-kaspa/rpc/core", package="rpc-core"}
+kaspa-wrpc-client = {path="../rusty-kaspa/rpc/wrpc/client"}
+kaspa-bip32 = {path="../rusty-kaspa/wallet/bip32"}
+kaspa-wallet-core = {path = "../rusty-kaspa/wallet/core"}
+kaspa-wallet-cli = {path = "../rusty-kaspa/wallet/cli"}
 
 async-std = { version = "1.8.0", features = ["attributes"] }
 convert_case = "0.5.0"
@@ -32,8 +41,8 @@ rand = "0.7.3"
 duct = "0.13.5"
 thiserror = "1.0.32"
 url = "2.3.1"
-wasm-bindgen = "0.2.79"
-wasm-bindgen-futures = "0.4.29"
+wasm-bindgen = { version = "0.2.79", features = ["serde-serialize"] }
+wasm-bindgen-futures = "0.4.33"
 js-sys="*"
 
 [workspace.dependencies.web-sys]

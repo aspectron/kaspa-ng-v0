@@ -1,5 +1,7 @@
 use crate::prelude::*;
+use kaspa_wallet_cli::kaspa_wallet_cli;
 use workflow_ux::result::Result;
+use workflow_terminal::{Options, TargetElement};
 
 pub struct Menu {
     pub root: SectionMenu,
@@ -24,11 +26,15 @@ impl Menu {
 #[derive(Module)]
 pub struct Console {
     pub menu: Menu,
+    cli_view: Arc<Mutex<Option<Arc<view::Html>>>>
 }
 
 impl Console {
     pub fn new() -> Result<Self> {
-        Ok(Self { menu: Menu::new()? })
+        Ok(Self {
+            menu: Menu::new()?,
+            cli_view: Arc::new(Mutex::new(None))
+        })
     }
 }
 
@@ -40,8 +46,40 @@ impl ModuleInterface for Console {
 }
 
 impl Console {
-    async fn cli(self: Arc<Self>) -> Result<()> {
-        templates::under_development().await?;
+    async fn cli(self: Arc<Self>) -> crate::result::Result<()> {
+
+        let main = workspace().main();
+        main.swap_from().await?;
+        let view_opt = self.cli_view.lock()?.clone();
+
+        let view = match view_opt {
+            Some(view) => view,
+            None => {
+                let view = view::Html::try_new(
+                    Some(self.clone()),
+                    html! {
+                        <div class="terminal-container" @container></div>
+                    }?,
+                )?;
+
+                let container = view.html().hooks().get("container").unwrap().clone();
+                let options = Options::new()
+                    .with_prompt("$ ")
+                    .with_element(TargetElement::Element(container));
+                workflow_core::task::wasm::spawn(async move {
+                    kaspa_wallet_cli(options).await.map_err(|e|{
+                        log_trace!("wallet-cli error: {e:?}");
+                    }).ok();
+                });
+
+                *self.cli_view.lock()? = Some(view.clone());
+                
+                view
+            }
+        };
+
+        main.swap_to(view).await?;
+
         Ok(())
     }
 }
