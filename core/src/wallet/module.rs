@@ -249,7 +249,7 @@ impl WalletView {
                 hooks
                     .get("balance")
                     .unwrap()
-                    .set_inner_html(&format!("{} KAS", balance));
+                    .set_inner_html(&format!("{balance} KAS"));
             }
             Event::Halt => return Ok(false),
             _ => {}

@@ -71,13 +71,13 @@ impl From<JsValue> for Error {
 
 impl From<Error> for JsValue {
     fn from(error: Error) -> JsValue {
-        JsValue::from(format!("{:?}", error))
+        JsValue::from(format!("{error:?}"))
     }
 }
 
 impl<T> From<PoisonError<T>> for Error {
     fn from(error: PoisonError<T>) -> Error {
-        Error::PoisonError(format!("{:?}", error))
+        Error::PoisonError(format!("{error:?}"))
     }
 }
 

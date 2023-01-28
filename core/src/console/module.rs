@@ -1,6 +1,9 @@
 use crate::prelude::*;
 use kaspa_wallet_cli::kaspa_wallet_cli;
-use workflow_ux::result::Result;
+use workflow_ux::{
+    result::Result,
+    view::View
+};
 use workflow_terminal::{Options, TargetElement};
 
 pub struct Menu {
@@ -40,6 +43,14 @@ impl Console {
 
 #[async_trait_without_send]
 impl ModuleInterface for Console {
+    async fn evict(
+        self: Arc<Self>,
+        container: &Arc<view::Container>,
+        _view: Arc<dyn view::View>
+    )-> Result<()> {
+        container.element().remove_attribute("data-view")?;
+        Ok(())
+    }
     async fn main(self: Arc<Self>) -> Result<()> {
         Ok(())
     }
@@ -61,6 +72,7 @@ impl Console {
                         <div class="terminal-container" @container></div>
                     }?,
                 )?;
+                view.element().class_list().add_1("terminal-view")?;
 
                 let container = view.html().hooks().get("container").unwrap().clone();
                 let options = Options::new()
@@ -79,7 +91,7 @@ impl Console {
         };
 
         main.swap_to(view).await?;
-
+        main.element().set_attribute("data-view", "terminal")?;
         Ok(())
     }
 }

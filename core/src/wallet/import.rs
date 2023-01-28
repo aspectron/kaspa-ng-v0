@@ -21,7 +21,7 @@ impl FormStageIndex {
     }
 
     pub fn value(&self) -> Result<u8> {
-        let value = self.value.lock()?.clone();
+        let value = *self.value.lock()?;
         Ok(value)
     }
 

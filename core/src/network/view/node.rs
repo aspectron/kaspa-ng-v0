@@ -138,7 +138,7 @@ impl NodeView {
                 hooks
                     .get("balance")
                     .unwrap()
-                    .set_inner_html(&format!("{} KAS", balance));
+                    .set_inner_html(&format!("{balance} KAS"));
             }
 
             Event::Blocks(blocks) => {
