@@ -1,10 +1,10 @@
 use thiserror::Error;
 use wasm_bindgen::prelude::*;
 
-use workflow_ux::error::Error as UxError;
-use workflow_terminal::error::Error as TerminalError;
 use kaspa_wallet_cli::error::Error as CLIError;
 use std::sync::PoisonError;
+use workflow_terminal::error::Error as TerminalError;
+use workflow_ux::error::Error as UxError;
 
 #[macro_export]
 macro_rules! error {

@@ -1,7 +1,7 @@
-[package]
-name = "rusty-kaspa-server"
-version = "0.1.0"
-edition = "2021"
+# [package]
+# name = "rusty-kaspa-server"
+# version = "0.1.0"
+# edition = "2021"
 
 [workspace]
 members = [
@@ -10,12 +10,20 @@ members = [
     "wallet"
 ]
 
-[dependencies]
-workflow-http.workspace = true
-duct.workspace = true
-async-std.workspace = true
-rand.workspace = true
-tide = "0.16.0"
+[workspace.package]
+version = "0.3.7"
+authors = ["Anton Yemelyanov <anton.yemelyanov@gmail.com>", "Surinder Singh Matoo Mattaur <surinder83singh@gmail.com>"]
+license = "MIT OR Apache-2.0"
+edition = "2021"
+include = ["src/**/*.rs", "Cargo.toml"]
+repository = "https://github.com/workflow-rs/workflow-rs"
+
+# [dependencies]
+# workflow-http.workspace = true
+# duct.workspace = true
+# async-std.workspace = true
+# rand.workspace = true
+# tide = "0.16.0"
 
 [workspace.dependencies]
 workflow-http = {path = "../workflow-http"}

@@ -1,10 +1,7 @@
 use crate::prelude::*;
 use kaspa_wallet_cli::kaspa_wallet_cli;
-use workflow_ux::{
-    result::Result,
-    view::View
-};
 use workflow_terminal::{Options, TargetElement};
+use workflow_ux::{result::Result, view::View};
 
 pub struct Menu {
     pub root: SectionMenu,
@@ -29,14 +26,14 @@ impl Menu {
 #[derive(Module)]
 pub struct Console {
     pub menu: Menu,
-    cli_view: Arc<Mutex<Option<Arc<view::Html>>>>
+    cli_view: Arc<Mutex<Option<Arc<view::Html>>>>,
 }
 
 impl Console {
     pub fn new() -> Result<Self> {
         Ok(Self {
             menu: Menu::new()?,
-            cli_view: Arc::new(Mutex::new(None))
+            cli_view: Arc::new(Mutex::new(None)),
         })
     }
 }
@@ -46,8 +43,8 @@ impl ModuleInterface for Console {
     async fn evict(
         self: Arc<Self>,
         container: &Arc<view::Container>,
-        _view: Arc<dyn view::View>
-    )-> Result<()> {
+        _view: Arc<dyn view::View>,
+    ) -> Result<()> {
         container.element().remove_attribute("data-view")?;
         Ok(())
     }
@@ -58,7 +55,6 @@ impl ModuleInterface for Console {
 
 impl Console {
     async fn cli(self: Arc<Self>) -> crate::result::Result<()> {
-
         let main = workspace().main();
         main.swap_from().await?;
         let view_opt = self.cli_view.lock()?.clone();
@@ -79,13 +75,16 @@ impl Console {
                     .with_prompt("$ ")
                     .with_element(TargetElement::Element(container));
                 workflow_core::task::wasm::spawn(async move {
-                    kaspa_wallet_cli(options).await.map_err(|e|{
-                        log_trace!("wallet-cli error: {e:?}");
-                    }).ok();
+                    kaspa_wallet_cli(options)
+                        .await
+                        .map_err(|e| {
+                            log_trace!("wallet-cli error: {e:?}");
+                        })
+                        .ok();
                 });
 
                 *self.cli_view.lock()? = Some(view.clone());
-                
+
                 view
             }
         };
