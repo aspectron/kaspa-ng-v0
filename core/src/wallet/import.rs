@@ -2,6 +2,7 @@
 
 use crate::prelude::*;
 use workflow_ux::controls::prelude::*;
+use workflow_ux::form::{FormStage, FormStages};
 use workflow_ux::result::Result;
 
 #[derive(Clone)]
@@ -35,6 +36,23 @@ struct ImportFormStage1 {
     mnemonic: Mnemonic,
 }
 
+#[async_trait_without_send]
+impl FormStage for ImportFormStage1 {
+    async fn serialize(&self) -> Result<FormData> {
+        let mut data = FormData::new(None);
+        data.add_string("mnemonic", self.mnemonic.value());
+        Ok(data)
+    }
+    async fn activate(&self) -> Result<()> {
+        self.show(true)?;
+        Ok(())
+    }
+    async fn deactivate(&self) -> Result<()> {
+        self.show(false)?;
+        Ok(())
+    }
+}
+
 #[group(title = "Confirming seeds")]
 struct ImportFormStage2 {
     #[field(label = "1st word")]
@@ -42,6 +60,24 @@ struct ImportFormStage2 {
 
     #[field(label = "4th word")]
     input2: Input,
+}
+
+#[async_trait_without_send]
+impl FormStage for ImportFormStage2 {
+    async fn serialize(&self) -> Result<FormData> {
+        let mut data = FormData::new(None);
+        data.add_string("value1", self.input1.value());
+        data.add_string("value2", self.input2.value());
+        Ok(data)
+    }
+    async fn activate(&self) -> Result<()> {
+        self.show(true)?;
+        Ok(())
+    }
+    async fn deactivate(&self) -> Result<()> {
+        self.show(false)?;
+        Ok(())
+    }
 }
 
 #[group(title = "Create wallet password")]
@@ -53,43 +89,59 @@ struct ImportFormStage3 {
     password_confirm: Input,
 }
 
-struct FormStages {
-    pub stages: Vec<Arc<dyn FormHandler>>,
-    pub index: u8,
+#[async_trait_without_send]
+impl FormStage for ImportFormStage3 {
+    async fn serialize(&self) -> Result<FormData> {
+        let mut data = FormData::new(None);
+        data.add_string("password", self.password.value());
+        data.add_string("password_confirm", self.password_confirm.value());
+        Ok(data)
+    }
+    async fn activate(&self) -> Result<()> {
+        self.show(true)?;
+        Ok(())
+    }
+    async fn deactivate(&self) -> Result<()> {
+        self.show(false)?;
+        Ok(())
+    }
 }
 
 #[form(title = "Import Wallet")]
 struct ImportForm {
-    stage1: ImportFormStage1,
-    stage2: ImportFormStage2,
-    stage3: ImportFormStage3,
-
-    #[field(skip = true)]
-    stage_index: FormStageIndex,
+    #[field(title = "Step [INDEX]/2")]
+    stages: FormStages,
 }
 
 #[async_trait_without_send]
 impl FormHandler for ImportForm {
     async fn load(&self) -> Result<()> {
-        //self.set_stage_index(self.stage_index.value()?)?;
+        self.stages
+            .add_stage(Arc::new(ImportFormStage1::try_new()?))?;
+        self.stages
+            .add_stage(Arc::new(ImportFormStage2::try_new()?))?;
+        self.stages
+            .add_stage(Arc::new(ImportFormStage3::try_new()?))?;
+        self.stages.activate_stage(0, Some(self.footer())).await?;
         Ok(())
     }
 
     async fn submit(&self) -> Result<()> {
-        match self.stage_index.value()? {
-            1 => {
-                let value = self.stage1.mnemonic.value();
-                log_trace!("mnemonics: {value}");
-                //self.set_stage_index(2)?;
-            }
-            2 => {
-                let word1 = self.stage2.input1.value();
-                let word2 = self.stage2.input2.value();
-                log_trace!("word1: {word1}");
-                log_trace!("word2: {word2}");
-                //self.set_stage_index(3)?;
-            }
-            _ => {}
+        let data = self.stages.serialize_stage().await?;
+        log_trace!("stage data: {:?}", data);
+
+        /*
+        // Or read data manually
+        let index = self.stages.index()?;
+        if index == 0{
+            let stage = self.stages.stage_downcast_arc::<ImportFormStage1>()?;
+            log_trace!("stage1.mnemonic: {:?}", stage.mnemonic.value());
+        }
+        */
+
+        if !self.stages.next(Some(self.footer())).await? {
+            log_trace!("complete data: {:#?}", self.stages.data()?);
+            // submit data
         }
 
         Ok(())

@@ -17,8 +17,8 @@ kaspa-wrpc-client.workspace = true
 kaspa-bip32.workspace = true
 kaspa-wallet-core.workspace = true
 
-
-tokio="*"
+[dev-dependencies]
+tokio.workspace = true
 
 
 [features]
