@@ -77,7 +77,7 @@ async fn _test_addresses_impl(_use_yield: bool) -> Result<()> {
     //let xpub = child_xpub.to_string(Prefix::XPUB);
     //let xpriv_str = "xprv9s21ZrQH143K4DoTUWmhygbsRQjAn1amZFxKpKtDtxabRpm9buGS5bbU4GuYDp7FtdReX5VbdGgoWwS7RuyWkV6aqYQUW6cX5McxWE8MN57"; //xpriv.as_str();
 
-    let hd_wallet = HDWalletGen1::from_master_xprv(_xpriv_str, false, 0).await?;
+    let hd_wallet = WalletGeneratorV1::from_master_xprv(_xpriv_str, false, 0).await?;
     //let xpublic_key = "kpub2K5JP5BKvfwttwv3aCdLAiF26nZugo8HA5SNv51hHCRRf5fWx8qPYjNxRBNc8tracpahrC3HpqK5VoaTS9hrT1q7LuzQL4LchptgsHhsThv";
     //let hd_wallet = HDWalletGen2::from_extended_public_key_str(xpublic_key).await?;
     //let xpub = hd_wallet.public_key().to_string(Some(Prefix::KPUB));
@@ -89,21 +89,25 @@ async fn _test_addresses_impl(_use_yield: bool) -> Result<()> {
     //    hd_wallet.receive_wallet().to_string().as_str()
     //);
     //log_trace!("extendedPubKey: {}\n", hd_wallet.receive_wallet().public_key().to_string(Some(Prefix::KPUB)));
-
+    use workflow_core::time::Instant;
+    let now = Instant::now();
     let mut receive_addresses: Vec<String> = Vec::new();
     let mut change_addresses: Vec<String> = Vec::new();
-    for index in 0..10 {
+    for index in 0..5000 {
         receive_addresses.push(hd_wallet.derive_receive_address(index).await?.into());
         change_addresses.push(hd_wallet.derive_change_address(index).await?.into());
-        if _use_yield && index % 10 == 0 {
+        if _use_yield && index % 5 == 0 {
             yield_executor().await;
         }
 
-        if index % 200 == 0 {
+        if index % 1000 == 0 {
             log_trace!("generating index:{}", index);
         }
         //sleep(Duration::from_secs(1)).await;
     }
+
+    let elapsed = now.elapsed();
+    log_trace!("Elapsed: {}sec", elapsed.as_secs()); 
 
     log_trace!("Receive addresses:");
     for (index, address) in receive_addresses.iter().enumerate() {

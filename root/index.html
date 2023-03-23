@@ -40,6 +40,7 @@
 			let kaspa = await import('../kaspa/kaspa.js');
 			const wasm = await kaspa.default('/kaspa/kaspa_bg.wasm');
 			console.log("wasm", wasm, kaspa)
+			window.___kaspa = kaspa;
 			
 			kaspa.init_console_panic_hook();
 			//kaspa.show_panic_hook_logs();
