@@ -8,7 +8,7 @@ pub use workflow_log::log_trace;
 mod manager;
 mod storage;
 
-pub use kaspa_wallet_core::{dummy_address, error::Error, generators::*, Result, WalletWrapper};
+pub use kaspa_wallet_core::{accounts::*, dummy_address, error::Error, Result, WalletWrapper};
 pub use manager::WalletManager;
 pub use storage::WalletStore;
 
