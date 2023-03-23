@@ -5,3 +5,4 @@ Cargo.lock
 node_modules
 root/build/package-lock.json
 root/static
+*.code-workspace
