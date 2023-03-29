@@ -1,4 +1,4 @@
-pub use addresses::{Address, AddressError, Prefix as AddressPrefix};
+pub use kaspa_addresses::{Address, AddressError, Prefix as AddressPrefix};
 pub use kaspa_bip32::*;
 pub use std::sync::Arc;
 pub use wasm_bindgen::prelude::*;

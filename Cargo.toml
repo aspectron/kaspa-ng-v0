@@ -36,8 +36,8 @@ workflow-terminal = {path = "../workflow-rs/terminal"}
 #workflow-async-trait = {path = "../workflow-async-trait"}
 workflow-async-trait = "0.1.68"
 
-addresses = {path="../rusty-kaspa/crypto/addresses"}
-consensus-core = {path="../rusty-kaspa/consensus/core"}
+kaspa-addresses = {path="../rusty-kaspa/crypto/addresses"}
+kaspa-consensus-core = {path="../rusty-kaspa/consensus/core"}
 kaspa-rpc-core = {path="../rusty-kaspa/rpc/core"}
 kaspa-wrpc-client = {path="../rusty-kaspa/rpc/wrpc/client"}
 kaspa-bip32 = {path="../rusty-kaspa/wallet/bip32"}
