@@ -11,7 +11,7 @@ workflow-terminal.workspace  = true
 workflow-html.workspace  = true
 workflow-wasm.workspace  = true
 workflow-async-trait.workspace  = true
-kaspa-wallet-cli.workspace = true
+kaspa-cli.workspace = true
 
 convert_case.workspace  = true
 thiserror.workspace  = true

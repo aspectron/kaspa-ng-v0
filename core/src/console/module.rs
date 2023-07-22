@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use kaspa_wallet_cli::{kaspa_wallet_cli, TerminalOptions, TerminalTarget};
+use kaspa_cli::{kaspa_cli, TerminalOptions, TerminalTarget};
 use workflow_ux::{result::Result, view::View};
 
 pub struct Menu {
@@ -73,8 +73,8 @@ impl Console {
                 let options = TerminalOptions::new()
                     .with_prompt("$ ")
                     .with_element(TerminalTarget::Element(container));
-                workflow_core::task::wasm::spawn(async move {
-                    kaspa_wallet_cli(options)
+                workflow_core::task::wasm::dispatch(async move {
+                    kaspa_cli(options, None)
                         .await
                         .map_err(|e| {
                             log_trace!("wallet-cli error: {e:?}");

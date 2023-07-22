@@ -1,5 +1,5 @@
 pub use std::sync::Arc;
-pub use workflow_log::*;
+pub use workflow_log::{log_error, log_info, log_trace, log_warning};
 
 pub use kaspa_core::application::application;
 pub use kaspa_core::application::Application;

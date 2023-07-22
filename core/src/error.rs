@@ -1,7 +1,7 @@
 use thiserror::Error;
 use wasm_bindgen::prelude::*;
 
-use kaspa_wallet_cli::error::Error as CLIError;
+use kaspa_cli::error::Error as CliError;
 use std::sync::PoisonError;
 use workflow_terminal::error::Error as TerminalError;
 use workflow_ux::error::Error as UxError;
@@ -37,7 +37,7 @@ pub enum Error {
     TerminalError(#[from] TerminalError),
 
     #[error("CLI error: {0}")]
-    CLIError(#[from] CLIError),
+    CLIError(#[from] CliError),
 
     #[error("I/O error: {0}")]
     IoError(#[from] std::io::Error),

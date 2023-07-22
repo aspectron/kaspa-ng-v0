@@ -42,7 +42,7 @@ kaspa-rpc-core = {path="../rusty-kaspa/rpc/core"}
 kaspa-wrpc-client = {path="../rusty-kaspa/rpc/wrpc/client"}
 kaspa-bip32 = {path="../rusty-kaspa/wallet/bip32"}
 kaspa-wallet-core = {path = "../rusty-kaspa/wallet/core"}
-kaspa-wallet-cli = {path = "../rusty-kaspa/wallet/cli"}
+kaspa-cli = {path = "../rusty-kaspa/cli"}
 
 async-std = { version = "1.12.0", features = ["attributes"] }
 convert_case = "0.6.0"
