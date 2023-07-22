@@ -11,8 +11,6 @@ fi
 
 declare -a crates=(
     "kaspa-ng-core"
-    # "kaspa-wallet-cli-wasm"
-    # "kaspa-wasm"
 )
 
 for crate in "${crates[@]}"
